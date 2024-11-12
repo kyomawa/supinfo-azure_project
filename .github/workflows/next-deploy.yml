@@ -1,0 +1,44 @@
+name: Deploy Next.js App to Azure App Service
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+  APPLICATION_PUBLISH_PROFILE: ${{ secrets.APP_PUBLISH_PROFILE }}
+  AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Next.js app
+        run: |
+          npm install
+          npm run build
+          mv ./build/static ./build/standalone/build
+          mv ./public ./build/standalone
+
+      - name: Deploy to Azure App Service
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: supinfo-azure_project
+          slot-name: production
+          publish-profile: ${{ env.APPLICATION_PUBLISH_PROFILE }}
+          package: ./build/standalone

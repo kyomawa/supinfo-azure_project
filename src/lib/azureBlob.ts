@@ -1,4 +1,3 @@
-// lib/azureBlob.js
 import { BlobServiceClient } from "@azure/storage-blob";
 
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
