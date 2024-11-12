@@ -8,7 +8,6 @@ on:
 env:
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
   AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
-  APPLICATION_PUBLISH_PROFILE: ${{ secrets.APP_PUBLISH_PROFILE }}
   AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
 
 jobs:
@@ -29,10 +28,13 @@ jobs:
 
       - name: Build Next.js app
         run: |
-          npm install
           npm run build
-          mv ./build/static ./build/standalone/build
-          mv ./public ./build/standalone
+
+      # Nouvelle étape : Connexion à Azure
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy to Azure App Service
         id: deploy-to-webapp
@@ -40,5 +42,4 @@ jobs:
         with:
           app-name: supinfo-azure_project
           slot-name: production
-          publish-profile: ${{ env.APPLICATION_PUBLISH_PROFILE }}
-          package: ./build/standalone
+          package: ./
