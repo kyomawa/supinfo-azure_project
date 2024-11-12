@@ -40,6 +40,6 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: supinfo-azure-group
+          app-name: supinfo-project-nextapp
           slot-name: production
           package: ./
