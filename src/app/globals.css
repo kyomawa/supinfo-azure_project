@@ -2,12 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer base {
-  :root {
-    --radius: 0.5rem;
+  a {
+    @apply focus-visible:outline-offset-0 focus-visible:outline-none;
+  }
+  html {
+    @apply 3k:text-[18.25px] 4.5k:text-[24.5px] 5k:text-[32px] 6k:text-[40px] 2k:text-[16.25px] 4k:text-[21px] 8k:text-[48px] 10k:text-[64px] 12k:text-[80px];
+  }
+
+  .bodyWebSite {
+    @apply selection:bg-primary-700 dark:selection:bg-primary-800 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary-600 dark:[&::-webkit-scrollbar-thumb]:bg-primary-700 [&::-webkit-scrollbar]:w-1.5;
+  }
+}
+@layer utilities {
+  .specialContainer {
+    @apply px-4 md:px-8 mx-auto w-full 2xl:w-[80vw];
   }
 }
