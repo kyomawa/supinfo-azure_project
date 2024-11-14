@@ -88,6 +88,20 @@ export const connexionMetadata: Metadata = {
 
 // ==========================================================================================================
 
+export const verificationMetadata: Metadata = {
+  title: "Vérification",
+  description: "Vérifiez votre adresse e-mail pour vous connecter à votre compte.",
+};
+
+// ==========================================================================================================
+
+export const connexionFailedMetadata: Metadata = {
+  title: " Connexion échouée",
+  description: " Veuillez vérifier vos informations d'identification et réessayer.",
+};
+
+// ==========================================================================================================
+
 export const messagesMetadata: Metadata = {
   title: "Messages",
   description: "Communiquez en privé avec vos connexions sur Supinfo Azure Project.",

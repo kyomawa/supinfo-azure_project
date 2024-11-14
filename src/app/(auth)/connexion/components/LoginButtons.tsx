@@ -3,6 +3,7 @@
 import { useState } from "react";
 import LoginWithEmailButton from "./LoginWithEmailButton";
 import LoginWithGoogleButton from "./LoginWithGoogleButton";
+import LoginWithFacebookButton from "./LoginWithFacebookButton";
 
 export default function LoginButtons() {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,6 +12,7 @@ export default function LoginButtons() {
     <div className="flex flex-col gap-y-2">
       <LoginWithEmailButton isLoading={isLoading} setIsLoading={setIsLoading} />
       <LoginWithGoogleButton isLoading={isLoading} />
+      <LoginWithFacebookButton isLoading={isLoading} />
     </div>
   );
 }

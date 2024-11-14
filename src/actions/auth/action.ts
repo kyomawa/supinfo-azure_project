@@ -15,5 +15,10 @@ export const loginWithEmail = async (email: string) => {
 export const loginWithGoogle = async () => {
   await signIn("google");
 };
+// ==================================================================================================================================
+
+export const loginWithFacebook = async () => {
+  await signIn("facebook");
+};
 
 // ==================================================================================================================================

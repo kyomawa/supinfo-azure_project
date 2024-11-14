@@ -21,6 +21,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: process.env.AUTH_SECRET,
   pages: {
     signIn: "/connexion",
+    error: "/connexion-echoue",
     verifyRequest: "/verification",
   },
   callbacks: {

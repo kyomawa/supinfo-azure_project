@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 
 // ==================================================================================================================================
 
-type LoginWithGoogleButton = {
+type LoginWithGoogleButtonProps = {
   isLoading: boolean;
 };
 
-export default function LoginWithGoogleButton({ isLoading }: LoginWithGoogleButton) {
+export default function LoginWithGoogleButton({ isLoading }: LoginWithGoogleButtonProps) {
   return (
     <form action={loginWithGoogle}>
       <Button isLoading={isLoading} variant="outline" className="w-full">

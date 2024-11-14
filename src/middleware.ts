@@ -7,7 +7,7 @@ const { auth } = NextAuth(authConfig);
 export default auth((req) => {
   const { nextUrl } = req;
 
-  const publicRoutes = ["/connexion", "/verification"];
+  const publicRoutes = ["/connexion", "/verification", "/connexion-echoue"];
   const isAuthenticated = !!req.auth;
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
 
@@ -16,7 +16,7 @@ export default auth((req) => {
   }
 
   if (!isAuthenticated && !isPublicRoute) {
-    return NextResponse.redirect(new URL("/connexion", nextUrl));
+    return NextResponse.redirect(new URL(`/connexion${nextUrl.search}`, nextUrl));
   }
 
   return NextResponse.next();
