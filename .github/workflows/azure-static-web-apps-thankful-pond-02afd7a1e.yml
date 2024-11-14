@@ -37,6 +37,7 @@ jobs:
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
           AUTH_GOOGLE_ID: ${{ secrets.AUTH_GOOGLE_ID }}
           AUTH_GOOGLE_SECRET: ${{ secrets.AUTH_GOOGLE_SECRET }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
     ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
