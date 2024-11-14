@@ -42,6 +42,15 @@ export default {
       fontFamily: {
         satoshi: ["var(--font-satoshi)"],
       },
+      keyframes: {
+        loading: {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
+      },
+      animation: {
+        loading: "loading 4.25s linear infinite",
+      },
     },
   },
   plugins: [TailwindCssAnimate],

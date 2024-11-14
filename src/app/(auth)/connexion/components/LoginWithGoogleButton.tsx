@@ -3,10 +3,14 @@ import { Button } from "@/components/ui/button";
 
 // ==================================================================================================================================
 
-export default function LoginWithGoogleButton() {
+type LoginWithGoogleButton = {
+  isLoading: boolean;
+};
+
+export default function LoginWithGoogleButton({ isLoading }: LoginWithGoogleButton) {
   return (
     <form action={loginWithGoogle}>
-      <Button variant="outline" className="w-full">
+      <Button isLoading={isLoading} variant="outline" className="w-full">
         <div className="flex items-center flex-row gap-x-3">
           <GoogleIcon />
           <span>Se connecter avec Google</span>

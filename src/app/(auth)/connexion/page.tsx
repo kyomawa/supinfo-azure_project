@@ -1,7 +1,6 @@
 import { connexionMetadata } from "@/constants/metadata";
 import { Metadata } from "next";
-import LoginWithEmailButton from "./components/LoginWithEmailButton";
-import LoginWithGoogleButton from "./components/LoginWithGoogleButton";
+import LoginButtons from "./components/LoginButtons";
 
 export const metadata: Metadata = connexionMetadata;
 
@@ -19,10 +18,7 @@ export default function page() {
             </p>
           </div>
           {/* Buttons */}
-          <div className="flex flex-col gap-y-2">
-            <LoginWithEmailButton />
-            <LoginWithGoogleButton />
-          </div>
+          <LoginButtons />
           <div className="border-t border-neutral-200 dark:border-white/15 py-4 flex justify-center">
             <p className="text-neutral-400 dark:text-primary-200/65 text-sm font-roboto">
               © 2024 SupInfo-Azure-Project. Tous droits réservés.

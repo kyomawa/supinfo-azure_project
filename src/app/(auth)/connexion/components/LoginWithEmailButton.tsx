@@ -10,7 +10,12 @@ import { z } from "zod";
 
 // ==================================================================================================================================
 
-export default function LoginWithEmailButton() {
+type LoginWithEmailButtonProps = {
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export default function LoginWithEmailButton({ isLoading, setIsLoading }: LoginWithEmailButtonProps) {
   const form = useForm<z.infer<typeof LoginWithEmailButtonSchema>>({
     resolver: zodResolver(LoginWithEmailButtonSchema),
     defaultValues: {
@@ -19,14 +24,16 @@ export default function LoginWithEmailButton() {
   });
 
   const onSubmit = async (values: z.infer<typeof LoginWithEmailButtonSchema>) => {
+    setIsLoading(true);
     await loginWithEmail(values.email);
+    setIsLoading(false);
   };
 
   return (
     <Form {...form}>
       <form className="space-y-12" onSubmit={form.handleSubmit(onSubmit)}>
         <FormInputField title="Email" name="email" type="email" placeholder="uneadresse@mail.com" form={form} />
-        <Button className="w-full" variant="default">
+        <Button isLoading={isLoading} className="w-full" variant="default">
           S&apos;authentifier
         </Button>
       </form>
