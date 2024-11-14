@@ -13,7 +13,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       from: "contact@supinfo-azure-project.fr",
     }),
   ],
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60,
+    updateAge: 24 * 60 * 60,
+  },
   secret: process.env.AUTH_SECRET,
   pages: {
     signIn: "/connexion",
