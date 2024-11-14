@@ -8,6 +8,12 @@ on:
 
 env:
   APPLICATION_PUBLISH_PROFILE: ${{ secrets.APP_PUBLISH_PROFILE }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+  AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+  AUTH_GOOGLE_ID: ${{ secrets.AUTH_GOOGLE_ID }}
+  AUTH_GOOGLE_SECRET: ${{ secrets.AUTH_GOOGLE_SECRET }}
+  NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
   WEBAPP_NAME: "supinfo-azure-project-nextjsapp"
 
 jobs:
@@ -23,13 +29,6 @@ jobs:
           node-version: "20.x"
 
       - name: Install dependencies and build
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
-          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
-          AUTH_GOOGLE_ID: ${{ secrets.AUTH_GOOGLE_ID }}
-          AUTH_GOOGLE_SECRET: ${{ secrets.AUTH_GOOGLE_SECRET }}
-          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
         run: |
           npm install
           npm run build
