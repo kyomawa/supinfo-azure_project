@@ -7,7 +7,7 @@ const { auth } = NextAuth(authConfig);
 export default auth((req) => {
   const { nextUrl } = req;
 
-  const publicRoutes = ["/connexion"];
+  const publicRoutes = ["/connexion", "/verification"];
   const isAuthenticated = !!req.auth;
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
 
