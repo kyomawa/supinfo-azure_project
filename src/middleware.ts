@@ -24,6 +24,6 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|_next/css|robots\\.txt|sitemap\\.xml|.*\\.png$|.*\\.ico$|.*\\.svg$|.*\\.jpg$|.*\\.css$|.*\\.js$).*)",
+    "/((?!\\.swa|api|_next/static|_next/image|_next/css|robots\\.txt|sitemap\\.xml|.*\\.png$|.*\\.ico$|.*\\.svg$|.*\\.jpg$|.*\\.css$|.*\\.js$).*)",
   ],
 };
