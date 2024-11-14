@@ -32,7 +32,7 @@ export default function LoginWithEmailButton({ isLoading, setIsLoading }: LoginW
   return (
     <Form {...form}>
       <form className="space-y-12" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormInputField title="Email" name="email" type="email" placeholder="uneadresse@mail.com" form={form} />
+        <FormInputField title="Email" name="email" type="email" placeholder="jean-buisson@gmail.com" form={form} />
         <Button isLoading={isLoading} className="w-full" variant="default">
           S&apos;authentifier
         </Button>
