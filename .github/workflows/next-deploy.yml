@@ -1,4 +1,4 @@
-name: Build and deploy Next.js app to Azure Web App - supinfo-azure-project-nextjsapp
+name: Build and deploy Next.js app to Azure Web App
 
 on:
   push:
@@ -43,12 +43,13 @@ jobs:
       name: "Production"
 
     steps:
-      - name: Login to Azure
-        uses: azure/login@v2
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_9DB147DE60FC461798DBBF5B53124852 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_C21FE71C066B47C8A6F22AEC4D880D5E }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B5FD5B8C86FE46DAA827C64DA85ADD1D }}
+          name: node-app
+
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
