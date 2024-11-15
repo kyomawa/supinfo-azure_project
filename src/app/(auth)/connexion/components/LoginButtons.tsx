@@ -4,6 +4,7 @@ import { useState } from "react";
 import LoginWithEmailButton from "./LoginWithEmailButton";
 import LoginWithGoogleButton from "./LoginWithGoogleButton";
 import LoginWithDiscordButton from "./LoginWithDiscordButton";
+import LoginWithMicrosoftButton from "./LoginWithMicrosoftButton";
 
 export default function LoginButtons() {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +18,7 @@ export default function LoginButtons() {
         <div className="h-px w-full flex-1 bg-neutral-200 dark:bg-white/15" />
       </div>
       <LoginWithGoogleButton isLoading={isLoading} />
+      <LoginWithMicrosoftButton isLoading={isLoading} />
       <LoginWithDiscordButton isLoading={isLoading} />
     </div>
   );
