@@ -38,6 +38,10 @@ export default {
           "900": "#801b40",
           "950": "#470a1f",
         },
+        neutral: {
+          "10": "#fefefe",
+          "150": "#eeeeee",
+        },
       },
       fontFamily: {
         satoshi: ["var(--font-satoshi)"],

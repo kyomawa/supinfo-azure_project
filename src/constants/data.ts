@@ -1,4 +1,4 @@
-import { Home, Search, Bell, MessageCircle, User, Settings, Users, PlusCircle } from "lucide-react";
+import { Home, Search, Bell, MessageCircle, User, Settings, Users, LogOut, SquarePlus } from "lucide-react";
 import { SidebarLinkProps } from "./type";
 
 // =============================================================================================================================================
@@ -12,9 +12,10 @@ export const sidebarLinks: SidebarLinkProps[] = [
   { label: "Recherche", icon: Search, onClick: () => console.log("Recherche sidebar ouverte") },
   { label: "Notifications", icon: Bell, onClick: () => console.log("Notifications sidebar ouverte") },
   { path: "/messages", label: "Messages", icon: MessageCircle },
-  { label: "Créer un post", icon: PlusCircle, onClick: () => console.log("Modal de création de post ouverte") },
+  { label: "Créer un post", icon: SquarePlus, onClick: () => console.log("Modal de création de post ouverte") },
   { path: "/amis", label: "Amis", icon: Users },
   { path: "/profil", label: "Profil", icon: User },
   { path: "/parametres", label: "Paramètres", icon: Settings },
+  { label: "Se déconnecter", icon: LogOut, onClick: () => console.log("Se déconnecter") },
 ];
 // =============================================================================================================================================

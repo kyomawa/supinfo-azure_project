@@ -1,10 +1,10 @@
-import { LucideProps } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
 // ==========================================================================================================
 
 export type SidebarLinkProps = {
   label: string;
-  icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>;
+  icon: LucideIcon;
   path?: string;
   onClick?: () => void;
 };
