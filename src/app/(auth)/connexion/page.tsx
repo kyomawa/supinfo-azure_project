@@ -21,11 +21,13 @@ export default function Page() {
             </p>
           </div>
           {/* Buttons & Form */}
-          <LoginButtons />
-          <div className="border-t border-neutral-200 dark:border-white/15 py-4 flex justify-center">
-            <p className="text-neutral-400 dark:text-primary-200/65 text-sm font-roboto">
-              © 2024 SupInfo-Azure-Project. Tous droits réservés.
-            </p>
+          <div>
+            <LoginButtons />
+            <div className="py-4 flex justify-center">
+              <p className="text-neutral-400 dark:text-primary-200/65 text-sm font-roboto">
+                © 2024 SAP. Tous droits réservés.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -38,7 +40,11 @@ export default function Page() {
 // ==================================================================================================================================
 
 function Banner() {
-  return <div className="bg-primary-700 dark:bg-primary-800 rounded-xl max-lg:hidden relative"></div>;
+  return (
+    <div className="bg-primary-700 dark:bg-primary-800 rounded-xl max-lg:hidden relative">
+      {/* Réduire la taille et mettre des images de la webApp */}
+    </div>
+  );
 }
 
 // ==================================================================================================================================

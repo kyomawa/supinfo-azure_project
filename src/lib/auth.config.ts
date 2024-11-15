@@ -1,13 +1,13 @@
 import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
-import Facebook from "next-auth/providers/facebook";
+import Discord from "next-auth/providers/discord";
 
 const authConfig: NextAuthConfig = {
   providers: [
     Google({
       allowDangerousEmailAccountLinking: true,
     }),
-    Facebook({
+    Discord({
       allowDangerousEmailAccountLinking: true,
     }),
   ],
