@@ -17,18 +17,18 @@ export default function Sidebar() {
         <nav className="flex-1 flex justify-between flex-col">
           {/* Show all links except disconnect and settings */}
           <ul>
-            {sidebarLinks.map((link) => {
+            {sidebarLinks.map((link, idx) => {
               const skip = ["Se déconnecter", "Paramètres"];
               if (skip.includes(link.label)) return;
-              return <SidebarLink key={link.path} {...link} />;
+              return <SidebarLink key={link.label + idx} {...link} />;
             })}
           </ul>
           {/* Show only disconnect and settings links */}
           <ul>
-            {sidebarLinks.map((link) => {
+            {sidebarLinks.map((link, idx) => {
               const skip = ["Se déconnecter", "Paramètres"];
               if (!skip.includes(link.label)) return;
-              return <SidebarLink key={link.path} {...link} />;
+              return <SidebarLink key={link.label + idx} {...link} />;
             })}
           </ul>
         </nav>

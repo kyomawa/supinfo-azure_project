@@ -1,12 +1,12 @@
 import NextAuth from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./prisma";
 import authConfig from "./auth.config";
 import Resend from "next-auth/providers/resend";
+import { CustomPrismaAdapter } from "./adapter";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
-  adapter: PrismaAdapter(prisma),
+  adapter: CustomPrismaAdapter(prisma),
   providers: [
     ...authConfig.providers,
     Resend({
@@ -15,8 +15,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60,
-    updateAge: 24 * 60 * 60,
+    maxAge: 2 * 60 * 60,
+    updateAge: 1 * 60 * 60,
   },
   secret: process.env.AUTH_SECRET,
   pages: {
@@ -27,6 +27,41 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async redirect({ url, baseUrl }) {
       return url.startsWith(baseUrl) ? url : baseUrl;
+    },
+    async signIn({ user, profile }) {
+      if (!user.username) {
+        let generatedUsername = "";
+
+        if (profile?.name) {
+          generatedUsername = profile.name.replace(/\s+/g, "").toLowerCase();
+        } else if (user.email) {
+          generatedUsername = user.email.split("@")[0];
+        } else {
+          generatedUsername = `user${Math.floor(Math.random() * 10000)}`;
+        }
+
+        let isUnique = false;
+        let suffix = 0;
+        let tempUsername = generatedUsername;
+
+        while (!isUnique) {
+          const existingUser = await prisma.user.findUnique({
+            where: { username: tempUsername },
+          });
+
+          if (!existingUser) {
+            isUnique = true;
+            generatedUsername = tempUsername;
+          } else {
+            suffix++;
+            tempUsername = `${generatedUsername}${suffix}`;
+          }
+        }
+
+        user.username = generatedUsername;
+      }
+
+      return true;
     },
   },
 });
