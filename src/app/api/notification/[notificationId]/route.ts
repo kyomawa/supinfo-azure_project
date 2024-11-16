@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import type { Notification } from "@prisma/client";
 import { auth } from "@/lib/auth";
 
 // =================================================================================================================
 
-export async function GET({ params }: { params: { notificationId: string } }) {
+export async function GET(_request: NextRequest, { params }: { params: { notificationId: string } }) {
   try {
     const session = await auth();
 

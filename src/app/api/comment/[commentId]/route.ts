@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import type { Comment } from "@prisma/client";
 import { auth } from "@/lib/auth";
 
 // =================================================================================================================
 
-export async function GET({ params }: { params: { commentId: string } }) {
+export async function GET(_request: NextRequest, { params }: { params: { commentId: string } }) {
   try {
     const session = await auth();
 
