@@ -41,7 +41,7 @@ export default function Sidebar() {
 
 // ==================================================================================================================================
 
-function SidebarLink({ path, label, icon: Icon }: SidebarLinkProps) {
+function SidebarLink({ path, label, onClick, icon: Icon }: SidebarLinkProps) {
   return (
     <motion.li className="py-3 mx-6 relative" whileHover="hover">
       {path ? (
@@ -50,7 +50,7 @@ function SidebarLink({ path, label, icon: Icon }: SidebarLinkProps) {
           <span className="text-neutral-700">{label}</span>
         </Link>
       ) : (
-        <button className="flex items-center gap-x-3 font-medium">
+        <button onClick={onClick} className="flex items-center gap-x-3 font-medium">
           <Icon className="size-6" />
           <span className="text-neutral-700">{label}</span>
         </button>

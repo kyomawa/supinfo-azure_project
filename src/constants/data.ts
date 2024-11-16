@@ -1,5 +1,6 @@
 import { Home, Search, Bell, MessageCircle, User, Settings, Users, LogOut, SquarePlus } from "lucide-react";
 import { SidebarLinkProps } from "./type";
+import { logout } from "@/actions/auth/action";
 
 // =============================================================================================================================================
 
@@ -16,6 +17,6 @@ export const sidebarLinks: SidebarLinkProps[] = [
   { path: "/amis", label: "Amis", icon: Users },
   { path: "/profil", label: "Profil", icon: User },
   { path: "/parametres", label: "Paramètres", icon: Settings },
-  { label: "Se déconnecter", icon: LogOut, onClick: () => console.log("Se déconnecter") },
+  { label: "Se déconnecter", icon: LogOut, onClick: () => logout() },
 ];
 // =============================================================================================================================================
