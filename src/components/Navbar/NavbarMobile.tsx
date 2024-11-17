@@ -30,18 +30,21 @@ export default function NavbarMobile({ userImage }: NavbarMobileProps) {
         <DropdownMenuComponent
           options={[
             <Link
+              key="navbar-link-profile"
               href="/profil"
               className="flex items-center gap-x-3 font-medium hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
             >
               Profil
             </Link>,
             <Link
+              key="navbar-link-parametres"
               href="/parametres"
               className="flex items-center gap-x-3 font-medium hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
             >
               Paramètres
             </Link>,
             <button
+              key="navbar-link-logout"
               onClick={() => logout()}
               className="flex w-full items-center gap-x-3 font-medium hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
             >
