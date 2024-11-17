@@ -24,7 +24,7 @@ export default function SidebarDesktop({ userImage }: SidebarDesktop) {
       </div>
       <nav className="flex-1 flex justify-between flex-col">
         {/* Show all links except disconnect and settings */}
-        <ul>
+        <ul className="mx-3">
           {sidebarLinks.map((link, idx) => {
             const skip = ["Se déconnecter", "Paramètres"];
             if (skip.includes(link.label)) return;
@@ -32,7 +32,7 @@ export default function SidebarDesktop({ userImage }: SidebarDesktop) {
           })}
         </ul>
         {/* Show only disconnect and settings links */}
-        <ul>
+        <ul className="mx-3">
           {sidebarLinks.map((link, idx) => {
             const unSkip = ["Se déconnecter", "Paramètres"];
             if (!unSkip.includes(link.label)) return;
@@ -57,14 +57,14 @@ function SidebarLink({ path, label, onClick, icon: Icon, userImage }: SidebarLin
 
   return (
     <TooltipComponent className="xl:hidden" label={label} side="right" delayDuration={250}>
-      <motion.li className={cn("py-3.5 px-3 mx-3 relative cursor-pointer")} whileHover="hover">
+      <motion.li className="relative cursor-pointer" whileHover="hover">
         {path ? (
-          <Link href={path} className="flex max-xl:justify-center items-center gap-x-3 font-medium">
+          <Link href={path} className="flex max-xl:justify-center items-center gap-x-3 font-medium py-3.5 px-3">
             {showAvatar ? (
               <Image
                 src={userImage}
                 className="rounded-full"
-                containerClassName="size-6 rounded-full"
+                containerClassName="size-6 rounded-full overflow-hidden"
                 alt="Avatar de l'utilisateur"
                 sizes="1.5rem"
               />
@@ -86,7 +86,7 @@ function SidebarLink({ path, label, onClick, icon: Icon, userImage }: SidebarLin
             </span>
           </Link>
         ) : (
-          <button onClick={onClick} className="flex max-xl:justify-center items-center gap-x-3 font-medium">
+          <button onClick={onClick} className="flex max-xl:justify-center items-center gap-x-3 font-medium py-3.5 px-3">
             <Icon
               className={cn("size-6 stroke-[1.75]", isActive && "stroke-primary-600 stroke-2 dark:stroke-primary-500")}
             />

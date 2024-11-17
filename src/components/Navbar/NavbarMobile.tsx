@@ -85,17 +85,18 @@ function NavbarLink({ path, label, icon: Icon, userImage }: NavbarLinkProps) {
   return (
     <li
       className={cn(
-        "p-3 relative cursor-pointer",
+        "relative cursor-pointer",
         isActive &&
           "after:rounded-full after:bg-primary-600 after:h-1 after:w-full after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2"
       )}
     >
-      <Link href={path || ""} className="flex max-xl:justify-center items-center gap-x-3 font-medium">
+      <Link href={path || ""} className="flex max-xl:justify-center items-center gap-x-3 p-3 font-medium">
         {showAvatar ? (
           <Image
             src={userImage}
             className="rounded-full"
-            containerClassName="size-6 rounded-full"
+            containerClassName="size-6 rounded-full overflow-hidden"
+            loadingClassName=""
             alt="Avatar de l'utilisateur"
             sizes="1.5rem"
           />
