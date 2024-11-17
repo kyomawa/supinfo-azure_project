@@ -13,9 +13,9 @@ export default function LoginButtons() {
     <div className="flex flex-col gap-y-2">
       <LoginWithEmailButton isLoading={isLoading} setIsLoading={setIsLoading} />
       <div className="flex items-center gap-x-2 my-2">
-        <div className="h-px w-full flex-1 bg-neutral-200 dark:bg-white/15" />
-        <p className="text-center text-neutral-400 dark:text-primary-200/65 font-medium text-sm">OU</p>
-        <div className="h-px w-full flex-1 bg-neutral-200 dark:bg-white/15" />
+        <div className="h-px w-full flex-1 bg-neutral-200 dark:bg-white/10" />
+        <p className="text-center text-neutral-400 dark:text-white/45 font-medium text-sm">OU</p>
+        <div className="h-px w-full flex-1 bg-neutral-200 dark:bg-white/10" />
       </div>
       <LoginWithGoogleButton isLoading={isLoading} />
       <LoginWithMicrosoftButton isLoading={isLoading} />

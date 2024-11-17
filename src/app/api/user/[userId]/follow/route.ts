@@ -1,25 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import type { User } from "@prisma/client";
 
 // =================================================================================================================
 
 export async function GET(_request: NextRequest, { params }: { params: { userId: string } }) {
   try {
-    const session = await auth();
-
-    if (!session) {
-      return NextResponse.json<ApiResponse<null>>(
-        {
-          success: false,
-          message: "Authentification requise.",
-          data: null,
-        },
-        { status: 401 }
-      );
-    }
-
     const following = await prisma.follow.findMany({
       where: { followerId: params.userId },
       include: { following: true },

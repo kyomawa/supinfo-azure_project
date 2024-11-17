@@ -102,10 +102,10 @@ export const connexionFailedMetadata: Metadata = {
 
 // ==========================================================================================================
 
-export const messagesMetadata: Metadata = {
-  title: "Messages",
-  description: "Communiquez en privé avec vos connexions sur Supinfo Azure Project.",
-  keywords: "Messages, chat, communication, réseau social",
+export const creationMetadata: Metadata = {
+  title: "Création",
+  description: "Créer un nouveau contenu sur Supinfo Azure Project.",
+  keywords: "création, publication, Supinfo Azure Project",
 };
 
 // ==========================================================================================================
@@ -126,10 +126,26 @@ export const settingsMetadata: Metadata = {
 
 // ==========================================================================================================
 
-export const friendsMetadata: Metadata = {
-  title: "Amis",
-  description: "Gérez vos connexions et explorez de nouveaux profils.",
-  keywords: "Amis, connexions, réseau social, Supinfo Azure Project",
+export const searchMetadata: Metadata = {
+  title: "Recherche",
+  description: "Rechercher un profil ou un contenu sur Supinfo Azure Project.",
+  keywords: "Recherche, profil, contenu, Supinfo Azure Project",
+};
+
+// ==========================================================================================================
+
+export const notificationsMetadata: Metadata = {
+  title: "Notifications",
+  description: "Gérez les notifications de votre compte sur Supinfo Azure Project.",
+  keywords: "Notifications, alertes, compte, Supinfo Azure Project",
+};
+
+// ==========================================================================================================
+
+export const discoveryMetadata: Metadata = {
+  title: "Découvrir",
+  description: "Découvrez les derniers contenus publiés sur Supinfo Azure Project.",
+  keywords: "Découvrir, publications, contenus, Supinfo Azure Project",
 };
 
 // ==========================================================================================================

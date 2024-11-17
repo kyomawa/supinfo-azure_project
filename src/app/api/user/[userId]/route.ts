@@ -1,25 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import type { User } from "@prisma/client";
-import { auth } from "@/lib/auth";
+
+export const dynamic = "force-static";
+export const revalidate = 3600;
 
 // =================================================================================================================
 
 export async function GET(_request: NextRequest, { params }: { params: { userId: string } }) {
   try {
-    const session = await auth();
-
-    if (!session) {
-      return NextResponse.json<ApiResponse<null>>(
-        {
-          success: false,
-          message: "Authentification requise.",
-          data: null,
-        },
-        { status: 401 }
-      );
-    }
-
     const user = await prisma.user.findUnique({
       where: { id: params.userId },
       include: {

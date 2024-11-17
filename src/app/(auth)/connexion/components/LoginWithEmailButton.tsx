@@ -3,7 +3,7 @@
 import { loginWithEmail } from "@/actions/auth/action";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { FormInputField } from "@/components/ui/FormFields/FormInputField";
+import { FormInputField } from "@/components/FormFields/FormInputField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

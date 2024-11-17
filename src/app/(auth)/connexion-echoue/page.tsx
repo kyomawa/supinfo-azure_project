@@ -1,3 +1,4 @@
+import Logo from "@/components/Logo";
 import { buttonVariants } from "@/components/ui/button";
 import { connexionFailedMetadata } from "@/constants/metadata";
 import { cn } from "@/lib/utils";
@@ -23,8 +24,9 @@ export default function ConnexionEchoue({ searchParams }: { searchParams: { [key
 
   return (
     <main className="flex flex-col items-center justify-center h-screen p-4">
+      <Logo className="size-14 dark:*:stroke-primary-500 mb-4" isLink={false} hideText />
       <h1 className="text-3xl font-bold mb-4">Échec de la connexion</h1>
-      <p className="text-lg text-center mb-6">{getErrorMessage(error)}</p>
+      <p className="text-lg text-center mb-6 text-neutral-400 dark:text-white/45">{getErrorMessage(error)}</p>
       <Link href="/" className={cn(buttonVariants(), "text-base")}>
         Retour à la page de connexion
       </Link>

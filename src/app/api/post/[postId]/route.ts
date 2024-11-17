@@ -1,25 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import type { Post } from "@prisma/client";
-import { auth } from "@/lib/auth";
 
 // =================================================================================================================
 
 export async function GET(_request: NextRequest, { params }: { params: { postId: string } }) {
   try {
-    const session = await auth();
-
-    if (!session) {
-      return NextResponse.json<ApiResponse<null>>(
-        {
-          success: false,
-          message: "Authentification requise.",
-          data: null,
-        },
-        { status: 401 }
-      );
-    }
-
     const post = await prisma.post.findUnique({
       where: { id: params.postId },
       include: {

@@ -1,42 +1,38 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import type { Notification } from "@prisma/client";
-import { auth } from "@/lib/auth";
 
 // =================================================================================================================
 
-export async function GET() {
+export async function GET(_request: NextRequest, { params }: { params: { userId: string } }) {
   try {
-    const session = await auth();
+    const notifications = await prisma.notification.findMany({
+      where: { userId: params.userId },
+    });
 
-    if (!session) {
+    if (!notifications) {
       return NextResponse.json<ApiResponse<null>>(
         {
           success: false,
-          message: "Authentification requise.",
+          message: "Notifications non trouvées.",
           data: null,
         },
-        { status: 401 }
+        { status: 404 }
       );
     }
 
-    const notifications = await prisma.notification.findMany({
-      where: { userId: session.user.id },
-      orderBy: { createdAt: "desc" },
-    });
-
     return NextResponse.json<ApiResponse<Notification[]>>({
       success: true,
-      message: "Notifications récupérées avec succès.",
+      message: "Liste des notifications récupérées avec succès.",
       data: notifications,
     });
   } catch (error) {
-    console.error("Erreur lors de la récupération des notifications :", error);
+    console.error("Erreur lors de la récupération des notifications de l'utilisateur:", error);
 
     return NextResponse.json<ApiResponse<null>>(
       {
         success: false,
-        message: "Échec de la récupération des notifications.",
+        message: "Échec de la récupération des notifications de l'utilisateur.",
         data: null,
       },
       { status: 500 }
