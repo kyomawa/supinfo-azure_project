@@ -34,7 +34,6 @@ export default function UserCardDeleteButton({ userId }: UserCardDeleteButtonPro
     setIsLoading(true);
 
     const res = await del(`/user/${userId}`);
-    console.log(res);
     if (!res.success) {
       toast.error(res.message);
       return;
