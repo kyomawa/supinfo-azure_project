@@ -49,3 +49,41 @@ export async function GET(_request: NextRequest, { params }: { params: { userId:
 }
 
 // =================================================================================================================
+
+export async function DELETE(_request: NextRequest, { params }: { params: { userId: string } }) {
+  try {
+    const user = await prisma.user.delete({
+      where: { id: params.userId },
+    });
+
+    if (!user) {
+      return NextResponse.json<ApiResponse<null>>(
+        {
+          success: false,
+          message: "Utilisateur non trouvé.",
+          data: null,
+        },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json<ApiResponse<User>>({
+      success: true,
+      message: "Utilisateur supprimé avec succès.",
+      data: user,
+    });
+  } catch (error) {
+    console.error("Erreur lors de la suppression de l'utilisateur :", error);
+
+    return NextResponse.json<ApiResponse<null>>(
+      {
+        success: false,
+        message: "Échec de la suppression de l'utilisateur.",
+        data: null,
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// =================================================================================================================

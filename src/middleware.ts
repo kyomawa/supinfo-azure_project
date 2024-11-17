@@ -4,14 +4,38 @@ import { NextResponse } from "next/server";
 
 const { auth } = NextAuth(authConfig);
 
+const publicRoutes = ["/connexion", "/verification", "/connexion-echoue"];
+const allowedOrigins = ["https://supinfo-azure-project.fr", "https://api.supinfo-azure-project.fr"];
+
 export default auth((req) => {
-  const { nextUrl } = req;
+  const { nextUrl, headers } = req;
 
   const isApiRoute = nextUrl.pathname.startsWith("/api");
   const isAuthRoute = nextUrl.pathname.startsWith("/api/auth/");
 
+  // Check the origin
   if (isApiRoute && !isAuthRoute) {
-    const apiKey = req.headers.get("x-sap-secret-api-key");
+    const origin = headers.get("origin");
+
+    if (!origin) {
+      // Allow local development
+      if (process.env.NODE_ENV === "development") {
+        return NextResponse.next();
+      }
+
+      return NextResponse.json({ success: false, message: "L'origine est manquante." }, { status: 401 });
+    }
+
+    if (!allowedOrigins.includes(origin)) {
+      return NextResponse.json({ success: false, message: "Origine invalide." }, { status: 403 });
+    }
+
+    return NextResponse.next();
+  }
+
+  // Check the API key
+  if (isApiRoute && !isAuthRoute) {
+    const apiKey = headers.get("x-sap-secret-api-key");
 
     if (!apiKey) {
       return NextResponse.json({ success: false, message: "La clé API est manquante." }, { status: 401 });
@@ -26,7 +50,6 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
-  const publicRoutes = ["/connexion", "/verification", "/connexion-echoue"];
   const isAuthenticated = !!req.auth;
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
 

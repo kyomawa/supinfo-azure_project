@@ -1,3 +1,6 @@
+"use server";
+
+import "server-only";
 import { apiUrl } from "@/constants/data";
 
 // =============================================================================================================================================
@@ -117,4 +120,4 @@ async function handleResponse<T>(res: Response): Promise<ApiResponse<T>> {
 
 // =============================================================================================================================================
 
-export { get, post, put, patch, del as delete };
+export { get, post, put, patch, del };

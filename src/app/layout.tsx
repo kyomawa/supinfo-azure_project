@@ -19,6 +19,9 @@ export default function RootLayout({
         <body
           className={`${satoshi.variable} ${satoshi.className} antialiased bg-neutral-50 dark:bg-neutral-950 bodyWebSite`}
         >
+          {/* Manifests Color */}
+          <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa" />
+          <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a" />
           {/* Loading Bar */}
           <NextTopLoader color="#b21e4b" zIndex={10} showSpinner={false} />
           {/* Theme */}
@@ -29,7 +32,7 @@ export default function RootLayout({
           {/* Toaster */}
           <Toaster
             toastOptions={{
-              className: "dark:bg-primary-900 bg-neutral-50 dark:text-white text-black",
+              className: "dark:bg-neutral-800 bg-neutral-50 dark:text-white text-black",
             }}
           />
         </body>

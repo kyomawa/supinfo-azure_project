@@ -5,7 +5,7 @@ export const metadata = searchMetadata;
 export default function Page() {
   return (
     <div className="p-6">
-      <h1 className="text-4xl font-medium">Recherche</h1>
+      <h1 className="title1">Recherche</h1>
     </div>
   );
 }
