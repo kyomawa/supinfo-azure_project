@@ -1,13 +1,14 @@
 import { settingsMetadata } from "@/constants/metadata";
-import { ensureUserIsAuthenticated } from "@/actions/auth/action";
 import { get } from "@/utils/apiFn";
 import { User } from "@prisma/client";
 import UserCard from "./components/UserCard";
+import { auth } from "@/lib/auth";
 
 export const metadata = settingsMetadata;
 
 export default async function Page() {
-  const userId = await ensureUserIsAuthenticated();
+  const session = await auth();
+  const userId = session?.user?.id;
 
   const res = await get<User>(`user/${userId}`, { tag: "userConnected" });
   const user = res.data;

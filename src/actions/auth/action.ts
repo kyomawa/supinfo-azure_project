@@ -1,6 +1,6 @@
 "use server";
 
-import { auth, signIn, signOut } from "@/lib/auth";
+import { signIn, signOut } from "@/lib/auth";
 
 // ==================================================================================================================================
 
@@ -32,16 +32,6 @@ export const loginWithMicrosoft = async () => {
 
 export const logout = async () => {
   await signOut();
-};
-
-// ==================================================================================================================================
-
-export const ensureUserIsAuthenticated = async () => {
-  const session = await auth();
-  if (!session || !session.user || !session.user.id) {
-    throw new Error("Vous devez être connecté pour effectuer une action.");
-  }
-  return session.user.id;
 };
 
 // ==================================================================================================================================

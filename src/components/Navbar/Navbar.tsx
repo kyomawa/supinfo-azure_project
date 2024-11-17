@@ -1,12 +1,13 @@
 import { get } from "@/utils/apiFn";
 import { User } from "@prisma/client";
 import NavbarMobile from "./NavbarMobile";
-import { ensureUserIsAuthenticated } from "@/actions/auth/action";
+import { auth } from "@/lib/auth";
 
 // ==================================================================================================================================
 
 export default async function Navbar() {
-  const userId = await ensureUserIsAuthenticated();
+  const session = await auth();
+  const userId = session?.user?.id;
 
   const res = await get<User>(`user/${userId}`, { tag: "userConnected" });
   const user = res.data;
