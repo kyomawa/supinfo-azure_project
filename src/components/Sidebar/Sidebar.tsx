@@ -11,7 +11,6 @@ export default async function Sidebar() {
 
   const res = await get<User>(`user/${userId}`, { tag: "userConnected" });
   const user = res.data;
-  console.log(user);
   return (
     <>
       {/* Sidebar content */}

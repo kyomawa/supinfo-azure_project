@@ -17,7 +17,7 @@ export default async function Navbar() {
       {/* Navbar Mobile Content */}
       <NavbarMobile userImage={user?.image} />
       {/* Navbar Mobile Height */}
-      <div className="md:hidden" />
+      <div className="md:hidden w-full h-[3.8125rem]" />
     </>
   );
 }

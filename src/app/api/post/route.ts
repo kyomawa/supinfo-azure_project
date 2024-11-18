@@ -3,11 +3,18 @@ import { NextRequest, NextResponse } from "next/server";
 import type { Post } from "@prisma/client";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 
-// =================================================================================================================
+// ==================================================================================================================================
 
 export async function GET(request: NextRequest) {
   const verif = verifyRequestHeaders(request);
   if (verif) return verif;
+
+  const url = new URL(request.url);
+  const skipParam = url.searchParams.get("skip");
+  const takeParam = url.searchParams.get("take");
+
+  const skip = skipParam ? parseInt(skipParam) : 0;
+  const take = takeParam ? parseInt(takeParam) : undefined;
 
   try {
     const posts = await prisma.post.findMany({
@@ -17,6 +24,8 @@ export async function GET(request: NextRequest) {
         comments: true,
       },
       orderBy: { createdAt: "desc" },
+      skip,
+      take,
     });
 
     return NextResponse.json<ApiResponse<Post[]>>({
@@ -38,4 +47,4 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// =================================================================================================================
+// ==================================================================================================================================
