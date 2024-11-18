@@ -19,7 +19,7 @@ export default function UserCard({ user }: UserCardProps) {
           alt="user"
           containerClassName="size-3/4 xs:size-4/6 sm:size-24 max-sm:aspect-square rounded-full"
           className="rounded-full"
-          sizes="75vw, (min-width: 768px) 6rem"
+          sizes="75vw, (min-width: 768px) 10vw"
           quality={100}
         />
       ) : (

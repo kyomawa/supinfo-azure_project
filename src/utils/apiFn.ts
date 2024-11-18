@@ -105,16 +105,26 @@ async function del<T>(url: string, options?: FetchOptions): Promise<ApiResponse<
 // =============================================================================================================================================
 
 async function handleResponse<T>(res: Response): Promise<ApiResponse<T>> {
-  if (!res.ok) {
-    const errorResponse = await res.json();
+  let data;
+  try {
+    data = await res.json();
+  } catch (error) {
+    console.error("Failed to parse JSON:", error);
     return {
       success: false,
-      message: errorResponse.message || "Une erreur est survenue.",
+      message: "Invalid response from server.",
       data: null,
     };
   }
 
-  const data: ApiResponse<T> = await res.json();
+  if (!res.ok) {
+    return {
+      success: false,
+      message: data.message || "Une erreur est survenue.",
+      data: null,
+    };
+  }
+
   return data;
 }
 

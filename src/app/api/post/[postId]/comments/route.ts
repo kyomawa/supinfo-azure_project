@@ -1,10 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import type { Comment } from "@prisma/client";
+import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 
 // =================================================================================================================
 
-export async function GET(_request: NextRequest, { params }: { params: { postId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { postId: string } }) {
+  const verif = verifyRequestHeaders(request);
+  if (verif) return verif;
+
   try {
     const comments = await prisma.comment.findMany({
       where: { postId: params.postId },

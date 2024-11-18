@@ -1,10 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import type { Notification } from "@prisma/client";
+import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 
 // =================================================================================================================
 
-export async function GET(_request: NextRequest, { params }: { params: { userId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { userId: string } }) {
+  const verif = verifyRequestHeaders(request);
+  if (verif) return verif;
+
   try {
     const notifications = await prisma.notification.findMany({
       where: { userId: params.userId },

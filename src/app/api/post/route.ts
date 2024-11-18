@@ -1,10 +1,14 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import type { Post } from "@prisma/client";
+import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 
 // =================================================================================================================
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const verif = verifyRequestHeaders(request);
+  if (verif) return verif;
+
   try {
     const posts = await prisma.post.findMany({
       include: {

@@ -1,13 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import type { User } from "@prisma/client";
-
-export const dynamic = "force-static";
-export const revalidate = 3600;
+import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 
 // =================================================================================================================
 
-export async function GET(_request: NextRequest, { params }: { params: { userId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { userId: string } }) {
+  const verif = verifyRequestHeaders(request);
+  if (verif) return verif;
+
   try {
     const user = await prisma.user.findUnique({
       where: { id: params.userId },
@@ -50,7 +51,10 @@ export async function GET(_request: NextRequest, { params }: { params: { userId:
 
 // =================================================================================================================
 
-export async function DELETE(_request: NextRequest, { params }: { params: { userId: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: { userId: string } }) {
+  const verif = verifyRequestHeaders(request);
+  if (verif) return verif;
+
   try {
     const user = await prisma.user.delete({
       where: { id: params.userId },

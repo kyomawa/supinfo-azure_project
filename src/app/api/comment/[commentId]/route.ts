@@ -1,10 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import type { Comment } from "@prisma/client";
+import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 
 // =================================================================================================================
 
-export async function GET(_request: NextRequest, { params }: { params: { commentId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { commentId: string } }) {
+  const verif = verifyRequestHeaders(request);
+  if (verif) return verif;
+
   try {
     const comment = await prisma.comment.findUnique({
       where: { id: params.commentId },
