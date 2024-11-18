@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 const { auth } = NextAuth(authConfig);
 
 const publicRoutes = ["/connexion", "/verification", "/connexion-echoue"];
-const allowedOrigins = ["https://supinfo-azure-project.fr", "https://api.supinfo-azure-project.fr"];
+// const allowedOrigins = ["https://supinfo-azure-project.fr", "https://api.supinfo-azure-project.fr"];
 
 export default auth((req) => {
   const { nextUrl, headers } = req;
@@ -14,24 +14,24 @@ export default auth((req) => {
   const isAuthRoute = nextUrl.pathname.startsWith("/api/auth/");
 
   // Check the origin
-  if (isApiRoute && !isAuthRoute) {
-    const origin = headers.get("origin");
+  // if (isApiRoute && !isAuthRoute) {
+  //   const origin = headers.get("origin");
 
-    if (!origin) {
-      // Allow local development
-      if (process.env.NODE_ENV === "development") {
-        return NextResponse.next();
-      }
+  //   if (!origin) {
+  //     // Allow local development
+  //     if (process.env.NODE_ENV === "development") {
+  //       return NextResponse.next();
+  //     }
 
-      return NextResponse.json({ success: false, message: "L'origine est manquante." }, { status: 401 });
-    }
+  //     return NextResponse.json({ success: false, message: "L'origine est manquante." }, { status: 401 });
+  //   }
 
-    if (!allowedOrigins.includes(origin)) {
-      return NextResponse.json({ success: false, message: "Origine invalide." }, { status: 403 });
-    }
+  //   if (!allowedOrigins.includes(origin)) {
+  //     return NextResponse.json({ success: false, message: "Origine invalide." }, { status: 403 });
+  //   }
 
-    return NextResponse.next();
-  }
+  //   return NextResponse.next();
+  // }
 
   // Check the API key
   if (isApiRoute && !isAuthRoute) {
