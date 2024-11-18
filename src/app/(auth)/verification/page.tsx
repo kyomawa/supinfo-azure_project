@@ -11,7 +11,7 @@ export const metadata = verificationMetadata;
 
 export default function Page() {
   return (
-    <main className="min-h-screen flex items-center justify-center p-4">
+    <main className="min-h-dvh flex items-center justify-center p-4">
       <div className="flex flex-col items-center gap-y-6 px-12 py-8 md:px-24 md:py-16 rounded-2xl shadow shadow-black/[0.0375] bg-white dark:bg-white/5">
         <VerificationIllustration />
         <div className="flex flex-col items-center gap-y-2.5 max-w-[28rem]">

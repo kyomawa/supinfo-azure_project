@@ -19,6 +19,10 @@
     @apply px-4 md:px-8 mx-auto w-full 2xl:w-[80vw];
   }
 
+  .specialPostContainer {
+    @apply px-4 md:px-8 mx-auto w-full xl:w-[35vw];
+  }
+
   .title1 {
     @apply text-2xl font-semibold;
   }
