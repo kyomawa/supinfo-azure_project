@@ -62,9 +62,15 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
       take,
     });
 
+    const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING!;
+
+    if (!connectionString) {
+      throw new Error("Veuillez définir AZURE_STORAGE_CONNECTION_STRING dans votre fichier .env");
+    }
+
     const postsWithSAS = posts.map((post) => ({
       ...post,
-      mediaUrl: post.mediaUrl ? generateSASURL(post.mediaUrl) : "",
+      mediaUrl: post.mediaUrl ? generateSASURL(post.mediaUrl, connectionString) : "",
     }));
 
     return NextResponse.json<ApiResponse<typeof posts>>({
