@@ -12,12 +12,12 @@ export default auth((req) => {
   const isAuthenticated = !!req.auth;
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
 
-  if (nextUrl.pathname.startsWith("/api") && !isAuthenticated) {
-    return new Response(JSON.stringify({ error: "Veuillez vous connecter" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  // if (nextUrl.pathname.startsWith("/api") && !isAuthenticated) {
+  //   return new Response(JSON.stringify({ error: "Veuillez vous connecter" }), {
+  //     status: 401,
+  //     headers: { "Content-Type": "application/json" },
+  //   });
+  // }
 
   if (isPublicRoute && isAuthenticated) {
     return NextResponse.redirect(new URL("/", nextUrl));
@@ -32,6 +32,6 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
-    "/((?!\\.swa|api/auth/|_next/static|_next/image|_next/css|robots\\.txt|sitemap\\.xml|manifest\\.json|icons/|.*\\.png$|.*\\.ico$|.*\\.svg$|.*\\.jpg$|.*\\.css$|.*\\.js$).*)",
+    "/((?!\\.swa|api|_next/static|_next/image|_next/css|robots\\.txt|sitemap\\.xml|manifest\\.json|icons/|.*\\.png$|.*\\.ico$|.*\\.svg$|.*\\.jpg$|.*\\.css$|.*\\.js$).*)",
   ],
 };
