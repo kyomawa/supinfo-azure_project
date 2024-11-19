@@ -5,6 +5,7 @@ import { ViewTransitions } from "next-view-transitions";
 import { Toaster } from "react-hot-toast";
 import NextTopLoader from "nextjs-toploader";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { SessionProvider } from "next-auth/react";
 
 export const metadata = commonMetadata;
 
@@ -24,11 +25,13 @@ export default function RootLayout({
           <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a" />
           {/* Loading Bar */}
           <NextTopLoader color="#b21e4b" zIndex={10} showSpinner={false} />
-          {/* Theme */}
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            {/* App Content */}
-            {children}
-          </ThemeProvider>
+          <SessionProvider>
+            {/* Theme */}
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+              {/* App Content */}
+              {children}
+            </ThemeProvider>
+          </SessionProvider>
           {/* Toaster */}
           <Toaster
             toastOptions={{

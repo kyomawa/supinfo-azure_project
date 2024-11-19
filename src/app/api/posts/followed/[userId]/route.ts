@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
+import { generateSASURL } from "@/lib/generateSasUrl";
 
 // =================================================================================================================
 
@@ -61,10 +62,15 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
       take,
     });
 
+    const postsWithSAS = posts.map((post) => ({
+      ...post,
+      mediaUrl: post.mediaUrl ? generateSASURL(post.mediaUrl) : "",
+    }));
+
     return NextResponse.json<ApiResponse<typeof posts>>({
       success: true,
       message: "Publications des utilisateurs suivis récupérées avec succès.",
-      data: posts,
+      data: postsWithSAS,
     });
   } catch (error) {
     console.error("Erreur lors de la récupération des publications suivies :", error);

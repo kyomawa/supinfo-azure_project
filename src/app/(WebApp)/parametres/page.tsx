@@ -10,7 +10,7 @@ export default async function Page() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const res = await get<User>(`user/${userId}`, { tag: "userConnected" });
+  const res = await get<User>(`users/${userId}`, { tag: "userConnected" });
   const user = res.data;
 
   if (!user) throw new Error("Vous devez être connecté pour accéder à cette page.");

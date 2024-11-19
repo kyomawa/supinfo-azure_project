@@ -15,3 +15,6 @@ export const sidebarLinks: SidebarLinkProps[] = [
   { label: "Se déconnecter", icon: LogOut, onClick: () => logout() },
 ];
 // =============================================================================================================================================
+
+export const MAX_UPLOAD_SIZE = 1024 * 1024 * 100;
+export const ACCEPTED_FILE_TYPES = ["image/png", "image/jpg", "image/jpeg", "image/webp", "image/svg+xml"];

@@ -20,7 +20,7 @@
   }
 
   .specialPostContainer {
-    @apply px-4 md:px-8 mx-auto w-full xl:w-[35vw];
+    @apply px-0 md:px-4 mx-auto w-full lg:max-2xl:max-w-screen-sm 2xl:w-[35vw];
   }
 
   .title1 {

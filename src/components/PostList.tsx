@@ -3,8 +3,9 @@
 import Image from "@/components/Image";
 import UserIcon from "@/components/UserIcon";
 import { get } from "@/utils/apiFn";
-import { Heart, Loader, MessageCircle, Send } from "lucide-react";
+import { Ellipsis, Heart, Loader, MessageCircle, Send } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 
 // ==================================================================================================================================
@@ -23,7 +24,7 @@ export default function PostList({ initialPosts }: PostListProps) {
     if (isLoading || !hasMore) return;
     setIsLoading(true);
     try {
-      const result = await get<PostEndpointProps[]>(`/post?skip=${skip}&take=10`, {
+      const result = await get<PostEndpointProps[]>(`/posts?skip=${skip}&take=10`, {
         tag: "posts",
         revalidateTime: 600,
       });
@@ -81,32 +82,43 @@ type PostCardProps = {
 
 function PostCard({ post }: PostCardProps) {
   const { description, mediaUrl, creator, likes, comments } = post;
-  const { username, image } = creator;
+  const { id, username, image } = creator;
+  const session = useSession();
+  const userId = session.data?.user.id;
+  const postOwnerIsCurrentUser = id === userId;
 
   return (
     <li className="flex flex-col">
-      {/* User Info */}
-      <div className="flex items-center gap-x-2.5 py-2.5">
-        {image ? (
-          <Image
-            src={image}
-            alt={`Avatar de ${username}`}
-            className="rounded-full"
-            containerClassName="size-8 max-sm:aspect-square rounded-full"
-            sizes="1.5rem"
-            quality={100}
-          />
-        ) : (
-          <UserIcon className="size-8 max-sm:aspect-square rounded-full" />
+      {/* User Info + Settings */}
+      <div className="flex justify-between items-center py-2.5">
+        <div className="flex items-center gap-x-2.5 ">
+          {image ? (
+            <Image
+              src={image}
+              alt={`Avatar de ${username}`}
+              className="rounded-full"
+              containerClassName="size-8 max-sm:aspect-square rounded-full"
+              sizes="2rem"
+              quality={100}
+            />
+          ) : (
+            <UserIcon className="size-8 max-sm:aspect-square rounded-full" />
+          )}
+          <span className="text-sm font-medium">{username}</span>
+        </div>
+        {postOwnerIsCurrentUser && (
+          <button>
+            <Ellipsis className="size-6" />
+          </button>
         )}
-        <span className="text-sm font-medium">{username}</span>
       </div>
       {/* Post Media */}
       <Image
         src={mediaUrl}
         alt={`Média du créateur ${username}`}
-        containerClassName="aspect-square size-full -z-[1]"
-        sizes="100vw, (min-width: 1280px) 50vw"
+        containerClassName="aspect-square size-full bg-white -z-[1]"
+        sizes="100vw, (min-width: 1024px) 75vw, (min-width: 1536px) 35vw"
+        quality={100}
       />
       {/* Post Actions */}
       <div className="flex gap-x-4 py-2.5">

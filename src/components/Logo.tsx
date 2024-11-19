@@ -3,7 +3,6 @@
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 // ==================================================================================================================================
 
@@ -26,12 +25,6 @@ export default function Logo({
 }: LogoProps) {
   const router = useRouter();
   const isAnimateOnHover = !disabledAnimation;
-
-  useEffect(() => {
-    if (isLink && path) {
-      router.prefetch(path);
-    }
-  }, [isLink, path, router]);
 
   const handleClick = () => {
     if (isLink && path) {

@@ -16,6 +16,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "random.imagecdn.app",
       },
+      {
+        protocol: "https",
+        hostname: "supinfoprojectstorage.blob.core.windows.net",
+      },
     ],
   },
 };

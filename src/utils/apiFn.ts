@@ -19,12 +19,17 @@ interface FetchOptions {
 const API_KEY_HEADER = "x-sap-secret-api-key";
 const API_KEY = process.env.SAP_SECRET_API_KEY;
 
-function getHeaders(options?: FetchOptions): HeadersInit {
+function getHeaders(body?: unknown, options?: FetchOptions): HeadersInit {
   const isServerSide = typeof window === "undefined";
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    ...options?.headers,
-  };
+  const headers: HeadersInit = {};
+
+  if (!(body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  if (options?.headers) {
+    Object.assign(headers, options.headers);
+  }
 
   if (isServerSide && API_KEY) {
     headers[API_KEY_HEADER] = API_KEY;
@@ -56,8 +61,8 @@ async function get<T>(url: string, options?: FetchOptions): Promise<ApiResponse<
 async function post<T>(url: string, body: unknown, options?: FetchOptions): Promise<ApiResponse<T>> {
   const res = await fetch(`${apiUrl}${url}`, {
     method: "POST",
-    headers: getHeaders(options),
-    body: JSON.stringify(body),
+    headers: getHeaders(body, options),
+    body: body instanceof FormData ? body : JSON.stringify(body),
     next: options?.tag ? { tags: [options.tag] } : undefined,
     credentials: "include",
   });
@@ -70,8 +75,8 @@ async function post<T>(url: string, body: unknown, options?: FetchOptions): Prom
 async function put<T>(url: string, body: unknown, options?: FetchOptions): Promise<ApiResponse<T>> {
   const res = await fetch(`${apiUrl}${url}`, {
     method: "PUT",
-    headers: getHeaders(options),
-    body: JSON.stringify(body),
+    headers: getHeaders(body, options),
+    body: body instanceof FormData ? body : JSON.stringify(body),
     next: options?.tag ? { tags: [options.tag] } : undefined,
     credentials: "include",
   });
@@ -84,8 +89,8 @@ async function put<T>(url: string, body: unknown, options?: FetchOptions): Promi
 async function patch<T>(url: string, body: unknown, options?: FetchOptions): Promise<ApiResponse<T>> {
   const res = await fetch(`${apiUrl}${url}`, {
     method: "PATCH",
-    headers: getHeaders(options),
-    body: JSON.stringify(body),
+    headers: getHeaders(body, options),
+    body: body instanceof FormData ? body : JSON.stringify(body),
     next: options?.tag ? { tags: [options.tag] } : undefined,
     credentials: "include",
   });
@@ -109,9 +114,18 @@ async function del<T>(url: string, options?: FetchOptions): Promise<ApiResponse<
 // =============================================================================================================================================
 
 async function handleResponse<T>(res: Response): Promise<ApiResponse<T>> {
-  let data;
   try {
-    data = await res.json();
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Une erreur est survenue.",
+        data: null,
+      };
+    }
+
+    return data;
   } catch (error) {
     console.error("Failed to parse JSON:", error);
     return {
@@ -120,16 +134,6 @@ async function handleResponse<T>(res: Response): Promise<ApiResponse<T>> {
       data: null,
     };
   }
-
-  if (!res.ok) {
-    return {
-      success: false,
-      message: data.message || "Une erreur est survenue.",
-      data: null,
-    };
-  }
-
-  return data;
 }
 
 // =============================================================================================================================================
