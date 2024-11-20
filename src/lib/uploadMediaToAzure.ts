@@ -121,10 +121,11 @@ async function uploadVideoToAzure(file: File, folderPath: string): Promise<strin
   await new Promise<void>((resolve, reject) => {
     ffmpeg(tempFilePath)
       .outputOptions([
-        "-vf scale=-2:1080", // Redimensionner à un maximum de 1080p
-        "-c:v libvpx", // Codec vidéo VP8 pour WebM
-        "-crf 23", // Facteur de qualité
-        "-b:v 1M", // Bitrate vidéo
+        "-vf scale=-2:1080", // Limiter la résolution maximale à 1080p
+        "-preset veryfast", // Utiliser un préréglage rapide
+        "-c:v libvpx", // Codec VP8 pour WebM
+        "-crf 30", // Réduire la qualité pour accélérer (CRF 30 est encore acceptable)
+        "-b:v 1M", // Bitrate vidéo fixe à 1 Mbps
         "-c:a libvorbis", // Codec audio Vorbis
       ])
       .format("webm") // Format de sortie WebM
