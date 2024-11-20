@@ -62,12 +62,10 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
       take,
     });
 
-    const postsWithSAS = await Promise.all(
-      posts.map(async (post) => ({
-        ...post,
-        mediaUrl: post.mediaUrl ? await generateSASURL(post.mediaUrl) : "",
-      }))
-    );
+    const postsWithSAS = posts.map((post) => ({
+      ...post,
+      mediaUrl: post.mediaUrl ? generateSASURL(post.mediaUrl) : "",
+    }));
 
     return NextResponse.json<ApiResponse<typeof posts>>({
       success: true,
