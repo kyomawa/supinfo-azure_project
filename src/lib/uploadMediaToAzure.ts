@@ -16,7 +16,8 @@ if (process.env.NODE_ENV === "development") {
     );
   }
 } else {
-  ffmpeg.setFfmpegPath("/usr/bin/ffmpeg");
+  ffmpeg.setFfmpegPath("/home/ffmpeg");
+  ffmpeg.setFfprobePath("/home/ffprobe");
 }
 
 // =============================================================================================================================================
