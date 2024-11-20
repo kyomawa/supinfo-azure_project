@@ -27,7 +27,7 @@ export default function PostList({ initialPosts }: PostListProps) {
     try {
       const result = await get<PostEndpointProps[]>(`/posts?skip=${skip}&take=10`, {
         tag: "posts",
-        revalidateTime: 600,
+        revalidateTime: 45,
       });
 
       if (result.success && result.data) {

@@ -10,7 +10,7 @@ export default async function Page() {
   const userId = session?.user.id;
   const posts = await get<PostEndpointProps[]>(`posts/followed/${userId}?take=10`, {
     tag: "posts",
-    revalidateTime: 1800,
+    revalidateTime: 45,
   });
 
   return (

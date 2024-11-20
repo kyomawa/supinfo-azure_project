@@ -28,21 +28,34 @@ export default function CreationForm({ userId }: { userId: string }) {
   const onSubmit: SubmitHandler<z.infer<typeof schemaCreatePostForm>> = async (
     values: z.infer<typeof schemaCreatePostForm>
   ) => {
+    const toastId = toast.loading("Création du post en cours...");
     setIsLoading(true);
 
     const formData = createFormData({ ...values, creatorId: userId });
+    const file = values.file;
 
-    const result = await post("posts", formData);
+    if (file.type.startsWith("image/")) {
+      // Traitement normal pour les images
+      const result = await post("posts", formData);
 
-    if (!result.success) {
+      if (!result.success) {
+        setIsLoading(false);
+        toast.error(result.message, { id: toastId });
+        return;
+      }
+
+      toast.success(result.message, { id: toastId });
+      router.replace("/");
+    } else if (file.type.startsWith("video/")) {
+      post("posts", formData);
+
+      form.reset();
+      toast.success("Votre vidéo est en cours de traitement. Votre post apparaîtra dès que celle-ci sera validée.", {
+        id: toastId,
+      });
       setIsLoading(false);
-      toast.error(result.message);
       return;
     }
-
-    toast.success(result.message);
-
-    router.replace("/");
 
     setIsLoading(false);
   };

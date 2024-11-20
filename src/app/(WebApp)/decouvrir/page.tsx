@@ -7,7 +7,7 @@ import { get } from "@/utils/apiFn";
 export const metadata = discoveryMetadata;
 
 export default async function Page() {
-  const posts = await get<PostEndpointProps[]>("posts?take=10", { tag: "posts", revalidateTime: 1800 });
+  const posts = await get<PostEndpointProps[]>("posts?take=10", { tag: "posts", revalidateTime: 45 });
 
   return (
     <div className="p-6 h-dvh 2xl:pr-36 scroll-smooth snap-y snap-mandatory overscroll-y-contain scrollbarVertical overflow-y-auto">
