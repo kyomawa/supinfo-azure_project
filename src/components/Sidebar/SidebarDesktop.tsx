@@ -9,6 +9,8 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Image from "../Image";
 import TooltipComponent from "../TooltipComponent";
+import CreationModal from "../../app/(WebApp)/creation/components/CreationModal";
+import { useState } from "react";
 
 // ==================================================================================================================================
 
@@ -17,6 +19,8 @@ type SidebarDesktop = {
 };
 
 export default function SidebarDesktop({ userImage }: SidebarDesktop) {
+  const [isCreationModalOpen, setIsCreationModalOpen] = useState(false);
+
   return (
     <aside className="max-md:hidden md:w-[4.75rem] xl:w-64 fixed h-full py-3 top-0 left-0 flex flex-col gap-y-10 border-r border-neutral-150 dark:border-white/10">
       <div className="px-6 py-3">
@@ -28,7 +32,15 @@ export default function SidebarDesktop({ userImage }: SidebarDesktop) {
           {sidebarLinks.map((link, idx) => {
             const skip = ["Se déconnecter", "Paramètres"];
             if (skip.includes(link.label)) return;
-            return <SidebarLink key={link.label + idx} userImage={userImage} {...link} />;
+            return (
+              <SidebarLink
+                isCreationModalOpen={isCreationModalOpen}
+                setIsCreationModalOpen={setIsCreationModalOpen}
+                key={link.label + idx}
+                userImage={userImage}
+                {...link}
+              />
+            );
           })}
         </ul>
         {/* Show only disconnect and settings links */}
@@ -36,7 +48,14 @@ export default function SidebarDesktop({ userImage }: SidebarDesktop) {
           {sidebarLinks.map((link, idx) => {
             const unSkip = ["Se déconnecter", "Paramètres"];
             if (!unSkip.includes(link.label)) return;
-            return <SidebarLink key={link.label + idx} {...link} />;
+            return (
+              <SidebarLink
+                isCreationModalOpen={isCreationModalOpen}
+                setIsCreationModalOpen={setIsCreationModalOpen}
+                key={link.label + idx}
+                {...link}
+              />
+            );
           })}
         </ul>
       </nav>
@@ -48,12 +67,25 @@ export default function SidebarDesktop({ userImage }: SidebarDesktop) {
 
 type SidebarLinkPropsActual = SidebarLinkProps & {
   userImage?: string | null;
+  setIsCreationModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isCreationModalOpen: boolean;
 };
 
-function SidebarLink({ path, label, onClick, icon: Icon, userImage }: SidebarLinkPropsActual) {
+function SidebarLink({
+  path,
+  label,
+  onClick,
+  icon: Icon,
+  userImage,
+  setIsCreationModalOpen,
+  isCreationModalOpen,
+}: SidebarLinkPropsActual) {
   const pathname = usePathname();
   const isActive = path ? (path === "/" ? pathname === path : pathname.startsWith(path)) : false;
   const showAvatar = userImage && label === "Profil";
+  const isCreationModal = label === "Création";
+
+  const mustBeHiglighted = isActive && !isCreationModalOpen;
 
   return (
     <TooltipComponent className="xl:hidden" label={label} side="right" delayDuration={250}>
@@ -72,28 +104,33 @@ function SidebarLink({ path, label, onClick, icon: Icon, userImage }: SidebarLin
               <Icon
                 className={cn(
                   "size-6 stroke-[1.75]",
-                  isActive && "stroke-primary-600 stroke-2 dark:stroke-primary-500"
+                  mustBeHiglighted && "stroke-primary-600 stroke-2 dark:stroke-primary-500"
                 )}
               />
             )}
             <span
               className={cn(
                 "text-neutral-600 dark:text-white/65 max-xl:hidden",
-                isActive && " dark:text-white text-black"
+                mustBeHiglighted && " dark:text-white text-black"
               )}
             >
               {label}
             </span>
           </Link>
+        ) : isCreationModal ? (
+          <CreationModal label={label} isOpen={isCreationModalOpen} setIsOpen={setIsCreationModalOpen} />
         ) : (
           <button onClick={onClick} className="flex max-xl:justify-center items-center gap-x-3 font-medium py-3.5 px-3">
             <Icon
-              className={cn("size-6 stroke-[1.75]", isActive && "stroke-primary-600 stroke-2 dark:stroke-primary-500")}
+              className={cn(
+                "size-6 stroke-[1.75]",
+                mustBeHiglighted && "stroke-primary-600 stroke-2 dark:stroke-primary-500"
+              )}
             />
             <span
               className={cn(
                 "text-neutral-600 dark:text-white/65 max-xl:hidden",
-                isActive && " dark:text-white text-black"
+                mustBeHiglighted && " dark:text-white text-black"
               )}
             >
               {label}

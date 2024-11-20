@@ -9,8 +9,8 @@ const inputVariants = cva(
     variants: {
       variant: {
         default:
-          "border border-neutral-200 bg-white dark:border-white/5 dark:bg-white/10 ring-offset-white placeholder:text-neutral-500 dark:placeholder:text-white/30 focus-visible:ring-1 focus-visible:ring-slate-950 focus-visible:ring-offset-1 blue:border-primary-100/20 blue:bg-primary-950 blue:text-neutral-10 blue:placeholder:text-primary-100/65 blue:focus-visible:ring-slate-300 blue:ring-offset-primary-100/75",
-        file: "border border-neutral-200 bg-white ring-offset-white dark:border-white/5 dark:bg-white/10 dark:placeholder:text-white/30 placeholder:text-neutral-500 focus-visible:ring-1 focus-visible:ring-slate-950 focus-visible:ring-offset-1 blue:border-primary-100/20 blue:bg-primary-950 blue:text-neutral-10 blue:placeholder:text-primary-100/65 blue:focus-visible:ring-slate-300 blue:ring-offset-primary-100/75",
+          "border border-neutral-200 bg-white dark:border-white/5 dark:bg-white/10 ring-offset-white placeholder:text-neutral-500 dark:placeholder:text-white/55 focus-visible:ring-1 focus-visible:ring-slate-950 focus-visible:ring-offset-1 ",
+        file: "border border-neutral-200 bg-white ring-offset-white dark:border-white/5 dark:bg-white/10 dark:placeholder:text-white/55 placeholder:text-neutral-500 focus-visible:ring-1 focus-visible:ring-slate-950 focus-visible:ring-offset-1   dark:text-neutral-10 dark:focus-visible:ring-slate-300 dark:ring-offset-primary-100/75",
       },
     },
     defaultVariants: {

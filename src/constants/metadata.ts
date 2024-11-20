@@ -102,14 +102,6 @@ export const connexionFailedMetadata: Metadata = {
 
 // ==========================================================================================================
 
-export const creationMetadata: Metadata = {
-  title: "Création",
-  description: "Créer un nouveau contenu sur Supinfo Azure Project.",
-  keywords: "création, publication, Supinfo Azure Project",
-};
-
-// ==========================================================================================================
-
 export const profileMetadata: Metadata = {
   title: "Profil",
   description: "Gérez et personnalisez votre profil utilisateur sur Supinfo Azure Project.",

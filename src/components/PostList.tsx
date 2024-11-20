@@ -20,6 +20,7 @@ export default function PostList({ initialPosts }: PostListProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialPosts.length === 10);
   const [skip, setSkip] = useState(initialPosts.length);
+  const [isVideoMuted, setIsVideoMuted] = useState(true);
 
   const loadMorePosts = async () => {
     if (isLoading || !hasMore) return;
@@ -48,11 +49,11 @@ export default function PostList({ initialPosts }: PostListProps) {
   };
 
   return (
-    <ul className="flex flex-col gap-y-10 relative">
+    <ul className="flex flex-col gap-y-10 relative mb-[5.5rem]">
       {posts && posts.length > 0 ? (
         <>
           {posts.map((post) => (
-            <PostCard key={post.id} post={post} />
+            <PostCard key={post.id} post={post} isVideoMuted={isVideoMuted} setIsVideoMuted={setIsVideoMuted} />
           ))}
           <motion.li
             key={posts.length}
@@ -79,21 +80,22 @@ export default function PostList({ initialPosts }: PostListProps) {
 
 type PostCardProps = {
   post: PostEndpointProps;
+  isVideoMuted: boolean;
+  setIsVideoMuted: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function PostCard({ post }: PostCardProps) {
-  const [isVideoMuted, setIsVideoMuted] = useState(true);
-  const { description, mediaUrl, creator, likes, comments } = post;
+function PostCard({ post, isVideoMuted, setIsVideoMuted }: PostCardProps) {
+  const { description, mediaUrl, creator, likes, comments, tags } = post;
   const { id, username, image } = creator;
   const session = useSession();
   const userId = session.data?.user.id;
   const postOwnerIsCurrentUser = id === userId;
-  const mediaIsAnImage = mediaUrl.includes("/images/") || mediaUrl.includes("random.imagecdn.app");
+  const mediaIsAnImage = mediaUrl.includes("/images/");
 
   return (
-    <li className="flex flex-col snap-center">
+    <li className="flex flex-col snap-center ">
       {/* User Info + Settings */}
-      <div className="flex justify-between items-center py-2.5">
+      <div className="flex justify-between items-center max-md:p-3 py-2.5">
         <div className="flex items-center gap-x-2.5 ">
           {image ? (
             <Image
@@ -120,8 +122,9 @@ function PostCard({ post }: PostCardProps) {
         <Image
           src={mediaUrl}
           alt={`Média du créateur ${username}`}
-          containerClassName="aspect-square size-full bg-white -z-[1]"
-          sizes="100vw, (min-width: 1024px) 75vw, (min-width: 1536px) 35vw"
+          containerClassName="aspect-square size-full bg-white -z-[1] min-h-[62.5dvh] xs:min-h-[75dvh]"
+          className="object-cover"
+          sizes="100vw, (min-width: 1024px) 75vw, (min-width: 1536px) 35vw, (min-width: 1921px) 30vw"
           quality={100}
         />
       ) : (
@@ -129,11 +132,12 @@ function PostCard({ post }: PostCardProps) {
           isMuted={isVideoMuted}
           setIsMuted={setIsVideoMuted}
           src={mediaUrl}
-          containerClassName="aspect-square size-full"
+          containerClassName="aspect-square size-full min-h-[62.5dvh] xs:min-h-[75dvh]"
+          className="object-cover"
         />
       )}
       {/* Post Actions */}
-      <div className="flex gap-x-4 py-2 mt-1">
+      <div className="flex gap-x-4 py-2 mt-1 max-md:p-3">
         {/* Likes Actions + Number  */}
         <div className="flex items-center gap-x-1">
           <Heart className="size-6" />
@@ -147,8 +151,13 @@ function PostCard({ post }: PostCardProps) {
         <Send className="size-6" />
       </div>
       {/* Post Footer */}
-      <p className="text-sm line-clamp-3">
-        <span className="font-semibold">{username}</span> {description}
+      <p className="text-sm line-clamp-3 max-md:px-3">
+        <span className="font-semibold">{username}</span> {description}{" "}
+        {tags.map((tag) => (
+          <span className="text-blue-300" key={tag}>
+            #{tag}{" "}
+          </span>
+        ))}
       </p>
     </li>
   );

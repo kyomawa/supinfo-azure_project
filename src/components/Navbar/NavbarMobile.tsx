@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import Image from "../Image";
 import DropdownMenuComponent from "../DropdownMenuComponent";
 import { logout } from "@/actions/auth/action";
+import CreationModal from "../../app/(WebApp)/creation/components/CreationModal";
+import { useState } from "react";
 
 // ==================================================================================================================================
 
@@ -16,6 +18,7 @@ type NavbarMobileProps = {
 };
 
 export default function NavbarMobile({ userImage }: NavbarMobileProps) {
+  const [isCreationModalOpen, setIsCreationModalOpen] = useState(false);
   const navbarLinksFiltered = sidebarLinks.filter(
     (link) => link.label !== "Profil" && link.label !== "Se déconnecter" && link.label !== "Paramètres"
   );
@@ -25,7 +28,13 @@ export default function NavbarMobile({ userImage }: NavbarMobileProps) {
     <nav className="md:hidden fixed bottom-0 inset-x-0 px-3 pt-1.5 pb-3.5 border-t dark:bg-neutral-950 bg-neutral-50 border-neutral-150 dark:border-white/10">
       <ul className="flex justify-between">
         {navbarLinksFiltered.map((link, idx) => (
-          <NavbarLink key={link.label + idx} userImage={userImage} {...link} />
+          <NavbarLink
+            key={link.label + idx}
+            userImage={userImage}
+            {...link}
+            setIsCreationModalOpen={setIsCreationModalOpen}
+            isCreationModalOpen={isCreationModalOpen}
+          />
         ))}
         <DropdownMenuComponent
           options={[
@@ -54,7 +63,12 @@ export default function NavbarMobile({ userImage }: NavbarMobileProps) {
           label="Menu"
           separator
         >
-          <NavbarLink userImage={userImage} {...navbarProfileLink} />
+          <NavbarLink
+            userImage={userImage}
+            {...navbarProfileLink}
+            setIsCreationModalOpen={setIsCreationModalOpen}
+            isCreationModalOpen={isCreationModalOpen}
+          />
         </DropdownMenuComponent>
       </ul>
     </nav>
@@ -65,9 +79,18 @@ export default function NavbarMobile({ userImage }: NavbarMobileProps) {
 
 type NavbarLinkProps = SidebarLinkProps & {
   userImage?: string | null;
+  setIsCreationModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isCreationModalOpen: boolean;
 };
 
-function NavbarLink({ path, label, icon: Icon, userImage }: NavbarLinkProps) {
+function NavbarLink({
+  path,
+  label,
+  icon: Icon,
+  userImage,
+  setIsCreationModalOpen,
+  isCreationModalOpen,
+}: NavbarLinkProps) {
   const pathname = usePathname();
   const profilePaths = ["/parametres", "/profil"];
 
@@ -82,11 +105,16 @@ function NavbarLink({ path, label, icon: Icon, userImage }: NavbarLinkProps) {
   }
   const showAvatar = userImage && label === "Profil";
 
+  const mustBeHiglighted = isActive && !isCreationModalOpen;
+
+  if (label === "Création")
+    return <CreationModal label={label} isOpen={isCreationModalOpen} setIsOpen={setIsCreationModalOpen} />;
+
   return (
     <li
       className={cn(
         "relative cursor-pointer",
-        isActive &&
+        mustBeHiglighted &&
           "after:rounded-full after:bg-primary-600 after:h-1 after:w-full after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2"
       )}
     >

@@ -10,12 +10,12 @@ import { Volume2, VolumeOff } from "lucide-react";
 export type VideoProps = {
   src: string;
   containerClassName?: string;
-  videoClassName?: string;
+  className?: string;
   isMuted: boolean;
   setIsMuted: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function Video({ src, containerClassName, videoClassName, isMuted, setIsMuted }: VideoProps) {
+export default function Video({ src, containerClassName, className, isMuted, setIsMuted }: VideoProps) {
   const currentVideo = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [userStoppedPlaying, setUserStoppedPlaying] = useState(false);
@@ -51,7 +51,7 @@ export default function Video({ src, containerClassName, videoClassName, isMuted
     <div className={cn("relative cursor-pointer", containerClassName)}>
       <motion.video
         ref={currentVideo}
-        className={cn("absolute inset-0 size-full", videoClassName)}
+        className={cn("absolute inset-0 size-full", className)}
         preload="metadata"
         playsInline
         onClick={handleClick}

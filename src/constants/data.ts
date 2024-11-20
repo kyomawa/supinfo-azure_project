@@ -8,7 +8,7 @@ export const sidebarLinks: SidebarLinkProps[] = [
   { path: "/", label: "Accueil", icon: Home },
   { path: "/recherche", label: "Recherche", icon: Search },
   { path: "/decouvrir", label: "Découvrir", icon: Compass },
-  { path: "/creation", label: "Création", icon: CirclePlus },
+  { label: "Création", icon: CirclePlus },
   { path: "/notifications", label: "Notifications", icon: Bell },
   { path: "/profil", label: "Profil", icon: User },
   { path: "/parametres", label: "Paramètres", icon: Settings },
