@@ -10,7 +10,9 @@ import path from "path";
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
 
 if (!AZURE_STORAGE_CONNECTION_STRING) {
-  throw new Error("Veuillez définir AZURE_STORAGE_CONNECTION_STRING dans votre fichier .env");
+  throw new Error(
+    `Veuillez définir AZURE_STORAGE_CONNECTION_STRING ${AZURE_STORAGE_CONNECTION_STRING} dans votre fichier .env, l'erreur provient de la fonction uploadMediaToAzure`
+  );
 }
 
 const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
