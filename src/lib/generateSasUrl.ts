@@ -26,7 +26,7 @@ export function generateSASURL(blobUrl: string): string {
     blobName,
     permissions: BlobSASPermissions.parse("r"),
     startsOn: new Date(),
-    expiresOn: new Date(new Date().valueOf() + 24 * 3600 * 1000),
+    expiresOn: new Date(new Date().valueOf() + 7 * 24 * 3600 * 1000),
     protocol: SASProtocol.Https,
     version: "2024-11-04",
   };

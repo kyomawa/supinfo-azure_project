@@ -22,7 +22,7 @@ export default function NavbarMobile({ userImage }: NavbarMobileProps) {
   const navbarProfileLink = sidebarLinks.filter((link) => link.label === "Profil")[0];
 
   return (
-    <nav className="md:hidden fixed bottom-0 inset-x-0 px-3 py-1.5 border-t dark:bg-neutral-950 bg-neutral-50 border-neutral-150 dark:border-white/10">
+    <nav className="md:hidden fixed bottom-0 inset-x-0 px-3 pt-1.5 pb-3.5 border-t dark:bg-neutral-950 bg-neutral-50 border-neutral-150 dark:border-white/10">
       <ul className="flex justify-between">
         {navbarLinksFiltered.map((link, idx) => (
           <NavbarLink key={link.label + idx} userImage={userImage} {...link} />

@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    @apply 3k:text-[18.25px] 4.5k:text-[24.5px] 5k:text-[32px] 6k:text-[40px] 2k:text-[16.25px] 4k:text-[21px] 8k:text-[48px] 10k:text-[64px] 12k:text-[80px] !scroll-smooth;
+  }
   a {
     @apply focus-visible:outline-offset-0 focus-visible:outline-none;
-  }
-  html {
-    @apply 3k:text-[18.25px] 4.5k:text-[24.5px] 5k:text-[32px] 6k:text-[40px] 2k:text-[16.25px] 4k:text-[21px] 8k:text-[48px] 10k:text-[64px] 12k:text-[80px];
   }
 
   .bodyWebSite {
@@ -21,6 +21,10 @@
 
   .specialPostContainer {
     @apply px-0 md:px-4 mx-auto w-full lg:max-2xl:max-w-screen-sm 2xl:w-[35vw];
+  }
+
+  .scrollbarVertical {
+    @apply [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary-600 dark:[&::-webkit-scrollbar-thumb]:bg-primary-700 [&::-webkit-scrollbar]:w-1.5;
   }
 
   .title1 {

@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <ViewTransitions>
-      <html lang="fr">
+      <html className="scroll-smooth" style={{ scrollBehavior: "smooth" }} lang="fr">
         <body
           className={`${satoshi.variable} ${satoshi.className} antialiased bg-neutral-50 dark:bg-neutral-950 bodyWebSite`}
         >

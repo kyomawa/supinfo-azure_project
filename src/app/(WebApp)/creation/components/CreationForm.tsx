@@ -17,8 +17,6 @@ import { useRouter } from "next/navigation";
 
 // ==============================================================================================================================
 
-// ==============================================================================================================================
-
 export default function CreationForm({ userId }: { userId: string }) {
   const router = useRouter();
   const form = useForm<z.infer<typeof schemaCreatePostForm>>({
@@ -44,7 +42,7 @@ export default function CreationForm({ userId }: { userId: string }) {
 
     toast.success(result.message);
 
-    router.replace("/decouvrir");
+    router.replace("/");
 
     setIsLoading(false);
   };
@@ -76,3 +74,5 @@ export default function CreationForm({ userId }: { userId: string }) {
     </Form>
   );
 }
+
+// ==============================================================================================================================

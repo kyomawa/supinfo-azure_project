@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { default as NextImage, ImageProps as NextImageProps } from "next/image";
 import { useState } from "react";
 
+// ==============================================================================================================================
+
 export type ImageProps = NextImageProps & {
   containerClassName?: string;
   loadingClassName?: string;
@@ -24,3 +26,5 @@ export default function Image({ containerClassName, loadingClassName, ...props }
     </div>
   );
 }
+
+// ==============================================================================================================================

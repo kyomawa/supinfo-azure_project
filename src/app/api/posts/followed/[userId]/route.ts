@@ -36,17 +36,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
     });
 
     const followingIds = follows.map((follow) => follow.followingId);
-
-    if (followingIds.length === 0) {
-      return NextResponse.json<ApiResponse<null>>(
-        {
-          success: true,
-          message: "Vous ne suivez aucun utilisateur.",
-          data: null,
-        },
-        { status: 200 }
-      );
-    }
+    followingIds.push(userId);
 
     const posts = await prisma.post.findMany({
       where: {
