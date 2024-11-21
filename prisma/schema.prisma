@@ -76,7 +76,8 @@ model User {
   followedBy    Follow[]       @relation("UserFollowedBy")
   likes         Like[]
   comments      Comment[]
-  notifications Notification[]
+  notifications Notification[] @relation("UserNotifications") // Notifications reçues
+  actions       Notification[] @relation("ActorNotifications")
 }
 
 model Post {
@@ -136,6 +137,9 @@ model Notification {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade) // Utilisateur qui a reçu la notification
   userId String @db.ObjectId
+
+  actor   User   @relation("ActorNotifications", fields: [actorId], references: [id], onDelete: Cascade) // Utilisateur qui a envoyé la notification
+  actorId String @db.ObjectId
 }

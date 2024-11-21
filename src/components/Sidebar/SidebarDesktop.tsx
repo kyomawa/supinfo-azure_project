@@ -16,9 +16,10 @@ import { useState } from "react";
 
 type SidebarDesktop = {
   userImage?: string | null;
+  username: string;
 };
 
-export default function SidebarDesktop({ userImage }: SidebarDesktop) {
+export default function SidebarDesktop({ userImage, username }: SidebarDesktop) {
   const [isCreationModalOpen, setIsCreationModalOpen] = useState(false);
 
   return (
@@ -34,6 +35,7 @@ export default function SidebarDesktop({ userImage }: SidebarDesktop) {
             if (skip.includes(link.label)) return;
             return (
               <SidebarLink
+                username={username}
                 isCreationModalOpen={isCreationModalOpen}
                 setIsCreationModalOpen={setIsCreationModalOpen}
                 key={link.label + idx}
@@ -50,6 +52,7 @@ export default function SidebarDesktop({ userImage }: SidebarDesktop) {
             if (!unSkip.includes(link.label)) return;
             return (
               <SidebarLink
+                username={username}
                 isCreationModalOpen={isCreationModalOpen}
                 setIsCreationModalOpen={setIsCreationModalOpen}
                 key={link.label + idx}
@@ -69,9 +72,11 @@ type SidebarLinkPropsActual = SidebarLinkProps & {
   userImage?: string | null;
   setIsCreationModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isCreationModalOpen: boolean;
+  username: string;
 };
 
 function SidebarLink({
+  username,
   path,
   label,
   onClick,
@@ -84,60 +89,73 @@ function SidebarLink({
   const isActive = path ? (path === "/" ? pathname === path : pathname.startsWith(path)) : false;
   const showAvatar = userImage && label === "Profil";
   const isCreationModal = label === "Création";
+  const isProfil = label === "Profil";
 
   const mustBeHiglighted = isActive && !isCreationModalOpen;
 
-  return (
-    <TooltipComponent className="xl:hidden" label={label} side="right" delayDuration={250}>
-      <motion.li className="relative cursor-pointer" whileHover="hover">
-        {path ? (
-          <Link href={path} className="flex max-xl:justify-center items-center gap-x-3 font-medium py-3.5 px-3">
-            {showAvatar ? (
-              <Image
-                src={userImage}
-                className="rounded-full"
-                containerClassName="size-6 rounded-full overflow-hidden"
-                alt="Avatar de l'utilisateur"
-                sizes="1.5rem"
-              />
-            ) : (
-              <Icon
-                className={cn(
-                  "size-6 stroke-[1.75]",
-                  mustBeHiglighted && "stroke-primary-600 stroke-2 dark:stroke-primary-500"
-                )}
-              />
-            )}
-            <span
-              className={cn(
-                "text-neutral-600 dark:text-white/65 max-xl:hidden",
-                mustBeHiglighted && " dark:text-white text-black"
-              )}
-            >
-              {label}
-            </span>
-          </Link>
-        ) : isCreationModal ? (
-          <CreationModal label={label} isOpen={isCreationModalOpen} setIsOpen={setIsCreationModalOpen} />
-        ) : (
-          <button onClick={onClick} className="flex max-xl:justify-center items-center gap-x-3 font-medium py-3.5 px-3">
+  const renderLinkContent = () => {
+    if (path) {
+      return (
+        <Link
+          href={isProfil ? `/profil/${username}` : path}
+          className="flex max-xl:justify-center items-center gap-x-3 font-medium py-3.5 px-3"
+        >
+          {showAvatar ? (
+            <Image
+              src={userImage}
+              className="rounded-full"
+              containerClassName="size-6 rounded-full overflow-hidden"
+              alt="Avatar de l'utilisateur"
+              sizes="1.5rem"
+            />
+          ) : (
             <Icon
               className={cn(
                 "size-6 stroke-[1.75]",
                 mustBeHiglighted && "stroke-primary-600 stroke-2 dark:stroke-primary-500"
               )}
             />
-            <span
-              className={cn(
-                "text-neutral-600 dark:text-white/65 max-xl:hidden",
-                mustBeHiglighted && " dark:text-white text-black"
-              )}
-            >
-              {label}
-            </span>
-          </button>
-        )}
+          )}
+          <span
+            className={cn(
+              "text-neutral-600 dark:text-white/65 max-xl:hidden",
+              mustBeHiglighted && " dark:text-white text-black"
+            )}
+          >
+            {label}
+          </span>
+        </Link>
+      );
+    }
 
+    if (isCreationModal) {
+      return <CreationModal label={label} isOpen={isCreationModalOpen} setIsOpen={setIsCreationModalOpen} />;
+    }
+
+    return (
+      <button onClick={onClick} className="flex max-xl:justify-center items-center gap-x-3 font-medium py-3.5 px-3">
+        <Icon
+          className={cn(
+            "size-6 stroke-[1.75]",
+            mustBeHiglighted && "stroke-primary-600 stroke-2 dark:stroke-primary-500"
+          )}
+        />
+        <span
+          className={cn(
+            "text-neutral-600 dark:text-white/65 max-xl:hidden",
+            mustBeHiglighted && " dark:text-white text-black"
+          )}
+        >
+          {label}
+        </span>
+      </button>
+    );
+  };
+
+  return (
+    <TooltipComponent className="xl:hidden" label={label} side="right" delayDuration={250}>
+      <motion.li className="relative cursor-pointer" whileHover="hover">
+        {renderLinkContent()}
         <motion.div
           initial={{
             opacity: 0,

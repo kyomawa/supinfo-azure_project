@@ -14,7 +14,7 @@ export default async function Sidebar() {
   return (
     <>
       {/* Sidebar content */}
-      <SidebarDesktop userImage={user?.image} />
+      <SidebarDesktop userImage={user?.image} username={user?.username || ""} />
       {/* Sidebar width */}
       <div className="max-md:hidden md:w-[4.75rem] xl:w-64" />
     </>

@@ -15,9 +15,10 @@ import { useState } from "react";
 
 type NavbarMobileProps = {
   userImage?: string | null;
+  username: string;
 };
 
-export default function NavbarMobile({ userImage }: NavbarMobileProps) {
+export default function NavbarMobile({ userImage, username }: NavbarMobileProps) {
   const [isCreationModalOpen, setIsCreationModalOpen] = useState(false);
   const navbarLinksFiltered = sidebarLinks.filter(
     (link) => link.label !== "Profil" && link.label !== "Se déconnecter" && link.label !== "Paramètres"
@@ -40,7 +41,7 @@ export default function NavbarMobile({ userImage }: NavbarMobileProps) {
           options={[
             <Link
               key="navbar-link-profile"
-              href="/profil"
+              href={`/profil/${username}`}
               className="flex items-center gap-x-3 font-medium hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
             >
               Profil

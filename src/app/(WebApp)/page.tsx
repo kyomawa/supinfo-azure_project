@@ -13,5 +13,5 @@ export default async function Page() {
     revalidateTime: 45,
   });
 
-  return <PostContainer title="Votre actualité" initialPosts={posts.data || []} />;
+  return <PostContainer initialPosts={posts.data || []} />;
 }

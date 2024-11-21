@@ -6,4 +6,20 @@ declare global {
   type PostEndpointProps = Prisma.PostGetPayload<{
     include: { comments: true; likes: true; creator: true };
   }>;
+  type NotificationByUserIdEndpointProps = Prisma.NotificationGetPayload<{
+    select: {
+      id: true;
+      actor: true;
+      content: true;
+      createdAt: true;
+      isRead: true;
+    };
+  }>;
+  type UserByIdEndpointProps = Prisma.UserGetPayload<{
+    include: {
+      posts: true;
+      follows: true;
+      followedBy: true;
+    };
+  }>;
 }

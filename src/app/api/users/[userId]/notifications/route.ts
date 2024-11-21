@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import type { Notification } from "@prisma/client";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 
 // =================================================================================================================
@@ -12,6 +11,13 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
   try {
     const notifications = await prisma.notification.findMany({
       where: { userId: params.userId },
+      select: {
+        id: true,
+        actor: true,
+        content: true,
+        createdAt: true,
+        isRead: true,
+      },
     });
 
     if (!notifications) {
@@ -25,7 +31,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
       );
     }
 
-    return NextResponse.json<ApiResponse<Notification[]>>({
+    return NextResponse.json<ApiResponse<NotificationByUserIdEndpointProps[]>>({
       success: true,
       message: "Liste des notifications récupérées avec succès.",
       data: notifications,

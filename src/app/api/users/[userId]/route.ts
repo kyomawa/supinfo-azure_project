@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import type { User } from "@prisma/client";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
+import { ObjectId } from "mongodb";
 
 // =================================================================================================================
 
@@ -10,8 +11,18 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
   if (verif) return verif;
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: params.userId },
+    const isObjectId = ObjectId.isValid(params.userId);
+    const conditions = [];
+
+    if (isObjectId) {
+      conditions.push({ id: params.userId });
+    }
+    conditions.push({ username: params.userId }, { email: params.userId });
+
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: conditions,
+      },
       include: {
         posts: true,
         follows: true,
