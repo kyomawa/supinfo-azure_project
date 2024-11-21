@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { MAX_UPLOAD_SIZE } from "./data";
+import { ACCEPTED_IMAGE_TYPES, MAX_UPLOAD_IMAGE_SIZE, MAX_UPLOAD_SIZE } from "./data";
 
 // =============================================================================================================================================
 
@@ -21,3 +21,18 @@ export const schemaCreatePostForm = z.object({
 export const schemaCreatePostFormData = zfd.formData({ ...schemaCreatePostForm.shape, creatorId: zfd.text() });
 
 // =============================================================================================================================================
+
+export const schemaUpdateProfileImageForm = z.object({
+  image: z
+    .instanceof(File, {
+      message: "Merci de bien vouloir insérer une image !",
+    })
+    .refine((file) => {
+      return !file || file.size <= MAX_UPLOAD_IMAGE_SIZE;
+    }, "Votre image doit faire moins de 15MB")
+    .refine((file) => {
+      return ACCEPTED_IMAGE_TYPES.includes(file?.type as string);
+    }, "Votre image doit être de type : PNG / JPG / JPEG / WEBP / SVG"),
+});
+
+export const schemaUpdateProfileImageFormData = zfd.formData(schemaUpdateProfileImageForm);

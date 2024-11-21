@@ -17,6 +17,7 @@ export const sidebarLinks: SidebarLinkProps[] = [
 // =============================================================================================================================================
 
 export const MAX_UPLOAD_SIZE = 1024 * 1024 * 150;
-export const ACCEPTED_FILE_TYPES = ["image/png", "image/jpg", "image/jpeg", "image/webp", "image/svg+xml"];
+export const MAX_UPLOAD_IMAGE_SIZE = 1024 * 1024 * 15;
+export const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpg", "image/jpeg", "image/webp", "image/svg+xml"];
 
 // =============================================================================================================================================

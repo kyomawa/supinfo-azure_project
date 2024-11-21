@@ -15,11 +15,4 @@ declare global {
       isRead: true;
     };
   }>;
-  type UserByIdEndpointProps = Prisma.UserGetPayload<{
-    include: {
-      posts: true;
-      follows: true;
-      followedBy: true;
-    };
-  }>;
 }

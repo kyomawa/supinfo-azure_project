@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
+import { generateSASURL } from "@/lib/generateSasUrl";
 
 // =================================================================================================================
 
@@ -30,6 +31,12 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
         { status: 404 }
       );
     }
+
+    notifications.map((notification) => {
+      notification.actor.image = notification.actor.image
+        ? generateSASURL(notification.actor.image)
+        : notification.actor.image;
+    });
 
     return NextResponse.json<ApiResponse<NotificationByUserIdEndpointProps[]>>({
       success: true,

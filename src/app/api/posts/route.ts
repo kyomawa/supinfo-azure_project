@@ -34,6 +34,10 @@ export async function GET(request: NextRequest) {
 
     const postsWithSAS = posts.map((post) => ({
       ...post,
+      creator: {
+        ...post.creator,
+        image: post.creator.image ? generateSASURL(post.creator.image) : "",
+      },
       mediaUrl: post.mediaUrl ? generateSASURL(post.mediaUrl) : "",
     }));
 

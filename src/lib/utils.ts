@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import imageCompression from "browser-image-compression";
 import { twMerge } from "tailwind-merge";
 import {
   differenceInHours,
@@ -69,6 +70,43 @@ export const formatTimeAgo = (date: string | Date) => {
 
   const years = differenceInYears(now, createdDate);
   return `il y a ${years} ans`;
+};
+
+// =============================================================================================================================================
+
+const imageCompressionOptions = {
+  maxSizeMB: 1,
+  maxWidthOrHeight: 1200,
+  useWebWorker: true,
+};
+
+export const onImageChangeCompress = async (
+  event: React.ChangeEvent<HTMLInputElement>,
+  onChange: (...event: unknown[]) => void,
+  setCompressedFile: React.Dispatch<React.SetStateAction<File | null>>,
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  enableSubmit?: () => void
+) => {
+  setIsLoading(true);
+  const file = event?.target?.files?.[0];
+  if (file) {
+    try {
+      const compressedBlob: Blob = await imageCompression(file, imageCompressionOptions);
+      const compressedFile = new File([compressedBlob], file.name, {
+        type: file.type,
+        lastModified: Date.now(),
+      });
+      setCompressedFile(compressedFile);
+      onChange(compressedFile);
+      if (enableSubmit) {
+        enableSubmit();
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 };
 
 // =============================================================================================================================================
