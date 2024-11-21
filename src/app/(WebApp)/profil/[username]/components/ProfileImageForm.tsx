@@ -15,6 +15,8 @@ import Image from "next/image";
 import { patch } from "@/utils/apiFn";
 import { User } from "@prisma/client";
 
+// =============================================================================================================================================
+
 type ProfileImageFormProps = {
   image: string | null;
   username: string;
@@ -25,6 +27,7 @@ export default function ProfileImageForm({ image, username }: ProfileImageFormPr
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isHover, setIsHover] = useState(false);
+  let toastId = "";
   const form = useForm<z.infer<typeof schemaUpdateProfileImageForm>>({
     resolver: zodResolver(schemaUpdateProfileImageForm),
     defaultValues: {
@@ -33,7 +36,6 @@ export default function ProfileImageForm({ image, username }: ProfileImageFormPr
   });
 
   const onSubmit = async (values: z.infer<typeof schemaUpdateProfileImageForm>) => {
-    const toastId = toast.loading("Mise à jour de l'image de profil...");
     setIsLoading(true);
 
     const imageFile = compressedFile || values.image;
@@ -51,6 +53,7 @@ export default function ProfileImageForm({ image, username }: ProfileImageFormPr
   };
 
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>, onChange: (...event: unknown[]) => void) => {
+    toastId = toast.loading("Mise à jour de l'image de profil...");
     await onImageChangeCompress(event, onChange, setCompressedFile, setIsLoading, async () => {
       await form.handleSubmit(onSubmit)();
       event.target.value = "";

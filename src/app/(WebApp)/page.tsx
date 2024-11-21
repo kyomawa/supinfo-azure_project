@@ -1,4 +1,4 @@
-import PostContainer from "@/components/PostContainer";
+import PostContainer from "@/components/Post/PostContainer";
 import { homeMetadata } from "@/constants/metadata";
 import { auth } from "@/lib/auth";
 import { get } from "@/utils/apiFn";

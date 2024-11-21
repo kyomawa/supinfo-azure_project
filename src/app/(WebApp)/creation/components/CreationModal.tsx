@@ -147,7 +147,7 @@ function CreationForm({ setIsOpen }: CreationFormProps) {
             <Button variant="outline">Annuler</Button>
           </CredenzaClose>
           <Button className="max-md:order-first" type="submit" isLoading={isLoading}>
-            Créer le post
+            Créer la publication
           </Button>
         </div>
       </form>

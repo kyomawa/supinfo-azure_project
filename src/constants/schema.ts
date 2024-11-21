@@ -20,6 +20,11 @@ export const schemaCreatePostForm = z.object({
 
 export const schemaCreatePostFormData = zfd.formData({ ...schemaCreatePostForm.shape, creatorId: zfd.text() });
 
+export const schemaEditPostForm = z.object({
+  description: z.string().min(1, "La description est requise."),
+  tags: z.string().optional(),
+});
+
 // =============================================================================================================================================
 
 export const schemaUpdateProfileImageForm = z.object({
@@ -36,3 +41,5 @@ export const schemaUpdateProfileImageForm = z.object({
 });
 
 export const schemaUpdateProfileImageFormData = zfd.formData(schemaUpdateProfileImageForm);
+
+// =============================================================================================================================================

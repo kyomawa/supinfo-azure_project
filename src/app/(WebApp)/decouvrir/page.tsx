@@ -1,4 +1,4 @@
-import PostContainer from "@/components/PostContainer";
+import PostContainer from "@/components/Post/PostContainer";
 import { discoveryMetadata } from "@/constants/metadata";
 import { get } from "@/utils/apiFn";
 
