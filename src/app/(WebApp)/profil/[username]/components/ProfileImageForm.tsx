@@ -23,11 +23,14 @@ type ProfileImageFormProps = {
 };
 
 export default function ProfileImageForm({ image, username }: ProfileImageFormProps) {
+  const [actualImage, setActualImage] = useState<string | null>(image);
   const [compressedFile, setCompressedFile] = useState<File | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isHover, setIsHover] = useState(false);
+
   let toastId = "";
+
   const form = useForm<z.infer<typeof schemaUpdateProfileImageForm>>({
     resolver: zodResolver(schemaUpdateProfileImageForm),
     defaultValues: {
@@ -43,8 +46,9 @@ export default function ProfileImageForm({ image, username }: ProfileImageFormPr
       image: imageFile,
     });
 
-    const response = await patch<User["image"]>(`users/${username}`, formData);
+    const response = await patch<User>(`users/${username}`, formData);
     if (response.success) {
+      setActualImage(response.data?.image);
       toast.success(response.message, { id: toastId });
     } else {
       toast.error(response.message, { id: toastId });
@@ -80,7 +84,7 @@ export default function ProfileImageForm({ image, username }: ProfileImageFormPr
                   className={cn(
                     "aspect-square relative size-full min-[500px]:size-64 rounded-full",
                     !isLoading && "cursor-pointer",
-                    isImageLoading && image && "bg-primary-600/85 dark:bg-primary-300/85"
+                    isImageLoading && actualImage && "bg-primary-600/85 dark:bg-primary-300/85"
                   )}
                 >
                   <AnimatePresence>
@@ -103,9 +107,9 @@ export default function ProfileImageForm({ image, username }: ProfileImageFormPr
                       </motion.div>
                     )}
                   </AnimatePresence>
-                  {image ? (
+                  {actualImage ? (
                     <Image
-                      src={image}
+                      src={actualImage}
                       alt={`Avatar de ${username}`}
                       fill
                       className="rounded-full object-cover"
