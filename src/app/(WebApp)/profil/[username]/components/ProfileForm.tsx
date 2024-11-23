@@ -10,7 +10,7 @@ type ProfileFormProps = {
 };
 
 export default function ProfileForm({ user, postsCount, followers, followings }: ProfileFormProps) {
-  const { username, email, bio, createdAt } = user;
+  const { username, bio } = user;
   return (
     <div className="flex flex-col gap-y-6">
       {/* Username + Edit or Follow button */}

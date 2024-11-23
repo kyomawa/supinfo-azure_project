@@ -1,7 +1,4 @@
-"use client";
-
 import Image from "@/components/Image";
-import { useState } from "react";
 
 // ==================================================================================================================================
 
@@ -28,8 +25,7 @@ type PostCardProps = {
 };
 
 function PostCard({ post, username }: PostCardProps) {
-  const [isVideoMuted, setIsVideoMuted] = useState(true);
-  const { id, mediaUrl, description, tags, createdAt, videoThumbnail } = post;
+  const { mediaUrl, videoThumbnail } = post;
   const isAnImage = mediaUrl.includes("/images/");
 
   return (
