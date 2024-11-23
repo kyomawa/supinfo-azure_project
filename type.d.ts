@@ -15,4 +15,18 @@ declare global {
       isRead: true;
     };
   }>;
+  type PostsByUserIdEndpointProps = Prisma.PostGetPayload<{
+    select: {
+      id: true;
+      mediaUrl: true;
+      createdAt: true;
+      likes: true;
+      comments: true;
+      description: true;
+      tags: true;
+      updatedAt: true;
+    };
+  }> & {
+    videoThumbnail?: string;
+  };
 }

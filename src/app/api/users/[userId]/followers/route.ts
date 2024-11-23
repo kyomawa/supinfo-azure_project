@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import type { User } from "@prisma/client";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
+import { generateSASURL } from "@/lib/generateSasUrl";
 
 // =================================================================================================================
 
@@ -9,31 +10,37 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
   const verif = verifyRequestHeaders(request);
   if (verif) return verif;
 
-  try {
-    const following = await prisma.follow.findMany({
-      where: { followerId: params.userId },
-      include: { following: true },
-    });
+  const followers = await prisma.follow.findMany({
+    where: { followerId: params.userId },
+    select: {
+      follower: true,
+    },
+  });
 
-    const followingUsers = following.map((follow) => follow.following);
-
-    return NextResponse.json<ApiResponse<User[]>>({
-      success: true,
-      message: "Liste des utilisateurs suivis récupérée avec succès.",
-      data: followingUsers,
-    });
-  } catch (error) {
-    console.error("Erreur lors de la récupération des utilisateurs suivis :", error);
-
+  if (!followers) {
     return NextResponse.json<ApiResponse<null>>(
       {
         success: false,
-        message: "Échec de la récupération des utilisateurs suivis.",
+        message: "Erreur lors de la récupération des utilisateurs suivis.",
         data: null,
       },
-      { status: 500 }
+      { status: 404 }
     );
   }
+
+  const followersUsers = followers.map((follow) => {
+    const user = follow.follower;
+    return {
+      ...user,
+      image: user.image ? generateSASURL(user.image) : user.image,
+    };
+  });
+
+  return NextResponse.json<ApiResponse<User[]>>({
+    success: true,
+    message: "Liste des utilisateurs suivis récupérée avec succès.",
+    data: followersUsers,
+  });
 }
 
 // =================================================================================================================

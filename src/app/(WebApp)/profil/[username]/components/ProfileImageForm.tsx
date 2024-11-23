@@ -82,7 +82,7 @@ export default function ProfileImageForm({ image, username }: ProfileImageFormPr
                   }}
                   onHoverEnd={() => setIsHover(false)}
                   className={cn(
-                    "aspect-square relative size-full min-[500px]:size-64 rounded-full",
+                    "aspect-square relative size-full min-[500px]:size-56 rounded-full",
                     !isLoading && "cursor-pointer",
                     isImageLoading && actualImage && "bg-primary-600/85 dark:bg-primary-300/85"
                   )}
@@ -114,7 +114,7 @@ export default function ProfileImageForm({ image, username }: ProfileImageFormPr
                       fill
                       className="rounded-full object-cover"
                       quality={100}
-                      sizes="100vw, (min-width: 768px) 50vw, (min-width: 1200px) 35vw"
+                      sizes="100vw, (min-width: 500px) 14rem"
                       priority
                       onLoad={() => setIsImageLoading(false)}
                     />

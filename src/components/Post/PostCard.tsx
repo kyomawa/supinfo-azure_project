@@ -110,7 +110,7 @@ export default function PostCard({ post, isVideoMuted, setIsVideoMuted, onDelete
       <p className="text-sm line-clamp-3 max-md:px-3">
         <span className="font-semibold">{username}</span> {description}{" "}
         {tags.map((tag) => (
-          <span className="text-blue-300" key={tag}>
+          <span className="text-blue-500 dark:text-blue-300" key={tag}>
             #{tag}{" "}
           </span>
         ))}

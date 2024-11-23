@@ -26,6 +26,9 @@
   .specialPostContainer {
     @apply px-0 md:px-4 mx-auto w-full md:max-2xl:max-w-screen-sm 2xl:w-[35vw] 2k:w-[30vw];
   }
+  .specialProfileContainer {
+    @apply px-0 md:px-4 mx-auto w-full md:max-2xl:max-w-screen-md 2xl:w-[45vw] 2k:w-[40vw];
+  }
 
   .scrollbarVertical {
     @apply [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary-600 dark:[&::-webkit-scrollbar-thumb]:bg-primary-700 [&::-webkit-scrollbar]:w-1.5;

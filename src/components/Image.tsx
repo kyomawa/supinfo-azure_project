@@ -19,7 +19,7 @@ export default function Image({ containerClassName, loadingClassName, ...props }
       className={cn(
         "relative",
         containerClassName,
-        imageIsLoading && `animate-pulse bg-primary-900/15 dark:bg-white/10 ${loadingClassName}`
+        imageIsLoading && `animate-pulse bg-black/5 dark:bg-white/10 ${loadingClassName}`
       )}
     >
       <NextImage {...props} onLoad={() => setImageIsLoading(false)} fill />

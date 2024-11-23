@@ -96,16 +96,20 @@ async function uploadImageToAzure(file: File, folderPath: string): Promise<strin
 
 /**
  * Gère l'upload d'une vidéo sur Azure Blob Storage après compression et conversion en WebM.
+ * Génère également une miniature (thumbnail) de haute qualité (1080p maximum) à partir de la première frame de la vidéo.
+ * Les vidéos et les miniatures partagent le même nom de fichier.
  * @param file Le fichier vidéo à uploader.
  * @param folderPath Le chemin/folder où uploader le fichier, par exemple 'posts/{creatorId}'.
  * @returns L'URL publique de la vidéo uploadée.
  */
 async function uploadVideoToAzure(file: File, folderPath: string): Promise<string> {
-  const uniqueFileName = `${crypto.randomUUID()}.webm`;
-  const blobName = `${folderPath}/${uniqueFileName}`;
+  const uniqueFileName = `${crypto.randomUUID()}`; // Nom unique sans extension
+  const videoBlobName = `${folderPath}/${uniqueFileName}.webm`;
+  const thumbnailBlobName = `${folderPath}/${uniqueFileName}.jpg`; // Miniature avec la même base de nom
 
   const tempFilePath = path.join(os.tmpdir(), `${crypto.randomUUID()}-input.mp4`);
   const tempOutputPath = path.join(os.tmpdir(), `${crypto.randomUUID()}-output.webm`);
+  const tempThumbnailPath = path.join(os.tmpdir(), `${crypto.randomUUID()}-thumbnail.jpg`);
 
   const arrayBuffer = await file.arrayBuffer();
   const inputBuffer = Buffer.from(arrayBuffer);
@@ -114,9 +118,13 @@ async function uploadVideoToAzure(file: File, folderPath: string): Promise<strin
   await fs.promises.writeFile(tempFilePath, inputBuffer);
 
   const containerClient = blobServiceClient.getContainerClient("videos");
-  await containerClient.createIfNotExists();
+  const thumbnailsContainerClient = blobServiceClient.getContainerClient("thumbnails");
 
-  const blockBlobClient: BlockBlobClient = containerClient.getBlockBlobClient(blobName);
+  await containerClient.createIfNotExists();
+  await thumbnailsContainerClient.createIfNotExists();
+
+  const blockBlobClient: BlockBlobClient = containerClient.getBlockBlobClient(videoBlobName);
+  const thumbnailBlobClient: BlockBlobClient = thumbnailsContainerClient.getBlockBlobClient(thumbnailBlobName);
 
   await new Promise<void>((resolve, reject) => {
     ffmpeg(tempFilePath)
@@ -134,16 +142,49 @@ async function uploadVideoToAzure(file: File, folderPath: string): Promise<strin
       .format("webm") // Format de sortie WebM
       .output(tempOutputPath) // Fichier temporaire de sortie
       .on("end", async () => {
-        // Lire le fichier temporaire converti et l'uploader sur Azure
-        const convertedBuffer = await fs.promises.readFile(tempOutputPath);
-        await blockBlobClient.uploadData(convertedBuffer, {
-          blobHTTPHeaders: { blobContentType: "video/webm" },
-        });
+        try {
+          // Lire le fichier temporaire converti et l'uploader sur Azure
+          const convertedBuffer = await fs.promises.readFile(tempOutputPath);
+          await blockBlobClient.uploadData(convertedBuffer, {
+            blobHTTPHeaders: { blobContentType: "video/webm" },
+          });
 
-        // Nettoyage des fichiers temporaires
-        await fs.promises.unlink(tempFilePath);
-        await fs.promises.unlink(tempOutputPath);
-        resolve();
+          // Génération de la miniature haute qualité à partir de la vidéo
+          await new Promise<void>((thumbnailResolve, thumbnailReject) => {
+            ffmpeg(tempFilePath)
+              .outputOptions([
+                "-vf scale=-2:1080", // Miniature en 1080p maximum, conserve le ratio
+                "-q:v 2", // Qualité JPEG optimale (2 = haute qualité)
+              ])
+              .frames(1) // Extraire une seule frame
+              .output(tempThumbnailPath) // Emplacement de la miniature temporaire
+              .on("end", async () => {
+                try {
+                  // Lire la miniature et l'uploader sur Azure
+                  const thumbnailBuffer = await fs.promises.readFile(tempThumbnailPath);
+                  await thumbnailBlobClient.uploadData(thumbnailBuffer, {
+                    blobHTTPHeaders: { blobContentType: "image/jpeg" },
+                  });
+
+                  // Supprimer la miniature temporaire
+                  await fs.promises.unlink(tempThumbnailPath);
+                  thumbnailResolve();
+                } catch (err) {
+                  thumbnailReject(err);
+                }
+              })
+              .on("error", (err) => thumbnailReject(err))
+              .run();
+          });
+
+          // Nettoyage des fichiers temporaires
+          await fs.promises.unlink(tempFilePath);
+          await fs.promises.unlink(tempOutputPath);
+
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
       })
       .on("error", async (err) => {
         console.error("Erreur lors de la conversion vidéo :", err);

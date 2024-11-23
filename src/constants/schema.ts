@@ -43,3 +43,9 @@ export const schemaUpdateProfileImageForm = z.object({
 export const schemaUpdateProfileImageFormData = zfd.formData(schemaUpdateProfileImageForm);
 
 // =============================================================================================================================================
+
+export const schemaSettingsCardVisibilityForm = z.object({
+  visibility: z.enum(["PUBLIC", "PRIVATE", "FRIENDS"]),
+});
+
+// =============================================================================================================================================

@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "motion/react";
 import { Volume2, VolumeOff } from "lucide-react";
+import TooltipComponent from "./TooltipComponent";
 
 // ==============================================================================================================================
 
@@ -75,13 +76,17 @@ type MuteButtonProps = {
 };
 
 function MuteButton({ isMuted, setIsMuted }: MuteButtonProps) {
+  const label = isMuted ? "Activer le son" : "Désactiver le son";
+
   return (
-    <button
-      onClick={() => setIsMuted(!isMuted)}
-      className="absolute bottom-4 right-4 p-2 rounded-full bg-black/15 dark:bg-white/10 dark:hover:bg-white/15 hover:bg-black/20 backdrop-blur-lg transition-colors duration-200"
-    >
-      {isMuted ? <VolumeOff className="size-4" /> : <Volume2 className="size-4" />}
-    </button>
+    <TooltipComponent label={label} side="top" delayDuration={250}>
+      <button
+        onClick={() => setIsMuted(!isMuted)}
+        className="absolute bottom-4 right-4 p-2 rounded-full bg-white/15 hover:bg-white/20 backdrop-blur-3xl transition-colors duration-200"
+      >
+        {isMuted ? <VolumeOff className="size-4 text-white" /> : <Volume2 className="size-4 text-white" />}
+      </button>
+    </TooltipComponent>
   );
 }
 
