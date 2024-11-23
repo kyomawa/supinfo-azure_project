@@ -18,11 +18,12 @@ import { User } from "@prisma/client";
 // =============================================================================================================================================
 
 type ProfileImageFormProps = {
+  id: string;
   image: string | null;
   username: string;
 };
 
-export default function ProfileImageForm({ image, username }: ProfileImageFormProps) {
+export default function ProfileImageForm({ image, username, id }: ProfileImageFormProps) {
   const [actualImage, setActualImage] = useState<string | null>(image);
   const [compressedFile, setCompressedFile] = useState<File | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
@@ -46,7 +47,7 @@ export default function ProfileImageForm({ image, username }: ProfileImageFormPr
       image: imageFile,
     });
 
-    const response = await patch<User>(`users/${username}`, formData);
+    const response = await patch<User>(`users/${id}`, formData);
     if (response.success) {
       setActualImage(response.data?.image);
       toast.success(response.message, { id: toastId });

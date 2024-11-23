@@ -32,10 +32,10 @@ type UserCardProps = {
 };
 
 function UserCard({ user, postsCount, followers, followings }: UserCardProps) {
-  const { username, image } = user;
+  const { id, username, image } = user;
   return (
     <div className="flex gap-x-12 items-center">
-      <ProfileImageForm image={image} username={username} />
+      <ProfileImageForm image={image} username={username} id={id} />
       <ProfileForm user={user} postsCount={postsCount} followers={followers} followings={followings} />
     </div>
   );

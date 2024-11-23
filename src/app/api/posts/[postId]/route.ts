@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import type { Post } from "@prisma/client";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 import { revalidateTag } from "next/cache";
 import { deleteMediaFromAzure } from "@/lib/deleteMediaFromAzure";
 import { schemaEditPostForm } from "@/constants/schema";
+import { generateSASURL } from "@/lib/generateSasUrl";
 
 // =================================================================================================================
 
@@ -15,10 +15,13 @@ export async function GET(request: NextRequest, { params }: { params: { postId: 
   try {
     const post = await prisma.post.findUnique({
       where: { id: params.postId },
-      include: {
+      select: {
+        id: true,
+        mediaUrl: true,
+        createdAt: true,
+        description: true,
+        tags: true,
         creator: true,
-        likes: true,
-        comments: true,
       },
     });
 
@@ -33,7 +36,10 @@ export async function GET(request: NextRequest, { params }: { params: { postId: 
       );
     }
 
-    return NextResponse.json<ApiResponse<Post>>({
+    post.mediaUrl = post.mediaUrl ? generateSASURL(post.mediaUrl) : post.mediaUrl;
+    post.creator.image = post.creator.image ? generateSASURL(post.creator.image) : post.creator.image;
+
+    return NextResponse.json<ApiResponse<PostWithCreatorByPostIdEndpointProps>>({
       success: true,
       message: "Post récupéré avec succès.",
       data: post,

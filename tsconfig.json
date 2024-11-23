@@ -22,6 +22,14 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "next-env.d.ts", "build/types/**/*.ts", "next.config.mjs"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "next-env.d.ts",
+    "build/types/**/*.ts",
+    "next.config.mjs",
+    "src/app/(WebApp)/profil/[username]/@modal/default.js"
+  ],
   "exclude": ["node_modules"]
 }

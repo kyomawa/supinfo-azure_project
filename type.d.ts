@@ -29,4 +29,28 @@ declare global {
   }> & {
     videoThumbnail?: string;
   };
+  type CommentsWithUsersByPostIdEndpointProps = Prisma.CommentGetPayload<{
+    select: {
+      content: true;
+      createdAt: true;
+      id: true;
+      user: true;
+    };
+  }>;
+  type LikesWithUsersByPostIdEndpointProps = Prisma.LikeGetPayload<{
+    select: {
+      id: true;
+      user: true;
+    };
+  }>;
+  type PostWithCreatorByPostIdEndpointProps = Prisma.PostGetPayload<{
+    select: {
+      id: true;
+      mediaUrl: true;
+      createdAt: true;
+      description: true;
+      tags: true;
+      creator: true;
+    };
+  }>;
 }

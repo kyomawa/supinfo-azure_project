@@ -165,7 +165,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { userId
     },
   });
 
-  revalidateTag("users");
+  revalidateTag(`user-${userId}`);
 
   return NextResponse.json<ApiResponse<typeof updatedUser>>({
     success: true,

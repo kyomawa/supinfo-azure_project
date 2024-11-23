@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import type { Like } from "@prisma/client";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
+import { generateSASURL } from "@/lib/generateSasUrl";
 
 // =================================================================================================================
 
@@ -12,10 +12,28 @@ export async function GET(request: NextRequest, { params }: { params: { postId: 
   try {
     const likes = await prisma.like.findMany({
       where: { postId: params.postId },
-      include: { user: true },
+      select: {
+        id: true,
+        user: true,
+      },
     });
 
-    return NextResponse.json<ApiResponse<Like[]>>({
+    if (!likes) {
+      return NextResponse.json<ApiResponse<null>>(
+        {
+          success: false,
+          message: "Erreur lors de la récupération des likes.",
+          data: null,
+        },
+        { status: 404 }
+      );
+    }
+
+    likes.forEach((like) => {
+      like.user.image = like.user.image ? generateSASURL(like.user.image) : like.user.image;
+    });
+
+    return NextResponse.json<ApiResponse<LikesWithUsersByPostIdEndpointProps[]>>({
       success: true,
       message: "Likes récupérés avec succès.",
       data: likes,

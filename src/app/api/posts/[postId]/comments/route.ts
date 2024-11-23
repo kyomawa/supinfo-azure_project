@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import type { Comment } from "@prisma/client";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
+import { generateSASURL } from "@/lib/generateSasUrl";
 
 // =================================================================================================================
 
@@ -12,11 +12,31 @@ export async function GET(request: NextRequest, { params }: { params: { postId: 
   try {
     const comments = await prisma.comment.findMany({
       where: { postId: params.postId },
-      include: { user: true },
+      select: {
+        content: true,
+        createdAt: true,
+        id: true,
+        user: true,
+      },
       orderBy: { createdAt: "asc" },
     });
 
-    return NextResponse.json<ApiResponse<Comment[]>>({
+    if (!comments) {
+      return NextResponse.json<ApiResponse<null>>(
+        {
+          success: false,
+          message: "Erreur lors de la récupération des commentaires.",
+          data: null,
+        },
+        { status: 404 }
+      );
+    }
+
+    comments.forEach((comment) => {
+      comment.user.image = comment.user.image ? generateSASURL(comment.user.image) : comment.user.image;
+    });
+
+    return NextResponse.json<ApiResponse<CommentsWithUsersByPostIdEndpointProps[]>>({
       success: true,
       message: "Commentaires récupérés avec succès.",
       data: comments,

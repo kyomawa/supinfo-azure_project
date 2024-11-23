@@ -9,7 +9,7 @@ export default async function Sidebar() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const res = await get<User>(`users/${userId}`, { tag: "users" });
+  const res = await get<User>(`users/${userId}`, { tag: `user-${userId}`, revalidateTime: 180 });
   const user = res.data;
   return (
     <>

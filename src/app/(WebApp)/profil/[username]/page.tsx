@@ -8,8 +8,9 @@ export const metadata = profileMetadata;
 export default async function Page({ params }: { params: { username: string } }) {
   const { username } = params;
 
-  const res = await get<User>(`users/${username}`, { tag: "users", revalidateTime: 180 });
+  const res = await get<User>(`users/${username}`, { tag: `user-${username}`, revalidateTime: 180 });
   const user = res.data;
+
   const posts = await get<PostsByUserIdEndpointProps[]>(`users/${user?.id}/posts`, {
     tag: `user-${user?.id}-posts`,
     revalidateTime: 45,
