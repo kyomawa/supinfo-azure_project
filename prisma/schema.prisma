@@ -143,6 +143,8 @@ model Notification {
 
   actor   User   @relation("ActorNotifications", fields: [actorId], references: [id], onDelete: Cascade) // Utilisateur qui a envoyé la notification
   actorId String @db.ObjectId
+
+  commentId String? @db.ObjectId
 }
 
 // ================================================= Enums ==========================================================

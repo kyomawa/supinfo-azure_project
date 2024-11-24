@@ -57,10 +57,10 @@ export const schemaNewCommentForm = z.object({
     .max(1000, "Le commentaire doit faire moins de 1000 caractères."),
 });
 
-export const schemaNewCommentFormJson = zfd.formData({
+export const schemaNewCommentFormJson = z.object({
   ...schemaNewCommentForm.shape,
-  postId: zfd.text(),
-  userId: zfd.text(),
+  postId: z.string(),
+  userId: z.string(),
 });
 
 // =============================================================================================================================================

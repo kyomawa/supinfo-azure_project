@@ -26,7 +26,10 @@ export async function POST(request: NextRequest) {
 
   const { postId, content, userId } = parsed.data;
 
-  const post = await prisma.post.findUnique({ where: { id: postId } });
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    select: { creatorId: true },
+  });
 
   if (!post) {
     return NextResponse.json<ApiResponse<null>>(
@@ -49,6 +52,17 @@ export async function POST(request: NextRequest) {
       user: true,
     },
   });
+
+  if (post.creatorId !== userId) {
+    await prisma.notification.create({
+      data: {
+        content: "a commenté votre publication",
+        userId: post.creatorId,
+        actorId: userId,
+        commentId: newComment.id,
+      },
+    });
+  }
 
   return NextResponse.json<ApiResponse<typeof newComment>>(
     {

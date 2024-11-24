@@ -24,6 +24,11 @@ export async function DELETE(request: NextRequest, { params }: { params: { likeI
 
   const like = await prisma.like.findUnique({
     where: { id: likeId },
+    include: {
+      post: {
+        select: { creatorId: true },
+      },
+    },
   });
 
   if (!like) {
@@ -40,6 +45,18 @@ export async function DELETE(request: NextRequest, { params }: { params: { likeI
   await prisma.like.delete({
     where: { id: likeId },
   });
+
+  if (like.post.creatorId !== like.userId) {
+    await prisma.notification.deleteMany({
+      where: {
+        actorId: like.userId,
+        userId: like.post.creatorId,
+        content: {
+          contains: "a aimé votre publication",
+        },
+      },
+    });
+  }
 
   revalidateTag(`post-${like.postId}-likes`);
 

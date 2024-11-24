@@ -12,6 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
   try {
     const notifications = await prisma.notification.findMany({
       where: { userId: params.userId },
+      orderBy: { createdAt: "desc" },
       select: {
         id: true,
         actor: true,

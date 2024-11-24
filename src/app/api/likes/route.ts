@@ -52,6 +52,21 @@ export async function POST(request: NextRequest) {
     },
   });
 
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    select: { creatorId: true },
+  });
+
+  if (post && post.creatorId !== userId) {
+    await prisma.notification.create({
+      data: {
+        content: `a aimé votre publication.`,
+        userId: post.creatorId,
+        actorId: userId,
+      },
+    });
+  }
+
   revalidateTag(`post-${postId}-likes`);
 
   return NextResponse.json<ApiResponse<typeof newLike>>(

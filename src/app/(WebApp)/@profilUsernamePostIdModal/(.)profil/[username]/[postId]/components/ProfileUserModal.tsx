@@ -12,7 +12,7 @@ import UserIcon from "@/components/UserIcon";
 import Video from "@/components/Video";
 import { schemaNewCommentForm } from "@/constants/schema";
 import { cn, formatFullTimeAgo } from "@/lib/utils";
-import { del, post } from "@/utils/apiFn";
+import { del, patch, post } from "@/utils/apiFn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "@prisma/client";
 import { Heart, Send, X } from "lucide-react";
@@ -26,6 +26,17 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -33,6 +44,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Credenza,
+  CredenzaBody,
+  CredenzaClose,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 import { Ellipsis } from "lucide-react";
 
 // ==================================================================================================================================
@@ -71,7 +91,8 @@ type PostCardProps = {
   likes: LikesWithUsersByPostIdEndpointProps[];
 };
 
-function PostCard({ post, likes: initialLikes, comments }: PostCardProps) {
+function PostCard({ post, likes: initialLikes, comments: initialComments }: PostCardProps) {
+  const [comments, setComments] = useState(initialComments);
   const [likes, setLikes] = useState(initialLikes);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -112,7 +133,7 @@ function PostCard({ post, likes: initialLikes, comments }: PostCardProps) {
           setIsDeleteModalOpen={setIsDeleteModalOpen}
           setIsEditModalOpen={setIsEditModalOpen}
         />
-        <CommentList comments={comments} />
+        <CommentList comments={comments} creatorId={creator.id} setComments={setComments} />
         <ActionButtons
           likes={likes}
           setLikes={setLikes}
@@ -120,7 +141,7 @@ function PostCard({ post, likes: initialLikes, comments }: PostCardProps) {
           username={creator.username}
           postId={post.id}
         />
-        <NewComment postId={post.id} />
+        <NewComment postId={post.id} setComments={setComments} />
       </div>
       {/* Modals  */}
       <PostCardEditForm
@@ -138,14 +159,16 @@ function PostCard({ post, likes: initialLikes, comments }: PostCardProps) {
 // ==================================================================================================================================
 
 type CommentListProps = {
+  creatorId: string;
   comments: CommentsWithUsersByPostIdEndpointProps[];
+  setComments: React.Dispatch<React.SetStateAction<CommentsWithUsersByPostIdEndpointProps[]>>;
 };
 
-function CommentList({ comments }: CommentListProps) {
+function CommentList({ comments, creatorId, setComments }: CommentListProps) {
   return (
     <ul className="flex flex-col flex-1 overflow-y-auto scrollbarVertical">
       {comments.map((comment) => (
-        <CommentCard key={comment.id} comment={comment} />
+        <CommentCard key={comment.id} comment={comment} creatorId={creatorId} setComments={setComments} />
       ))}
     </ul>
   );
@@ -154,15 +177,20 @@ function CommentList({ comments }: CommentListProps) {
 // ==================================================================================================================================
 
 type CommentCardProps = {
+  creatorId: string;
   comment: CommentsWithUsersByPostIdEndpointProps;
+  setComments: React.Dispatch<React.SetStateAction<CommentsWithUsersByPostIdEndpointProps[]>>;
 };
 
-function CommentCard({ comment }: CommentCardProps) {
+function CommentCard({ comment, creatorId, setComments }: CommentCardProps) {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const session = useSession();
   const userConnectedId = session.data?.user.id;
   const { content, createdAt, user } = comment;
   const { username, image } = user;
   const isUserConnectedTheCommentator = userConnectedId === user.id;
+  const isUserConnectedThePostAuthor = userConnectedId === creatorId && !isUserConnectedTheCommentator;
 
   return (
     <li className="flex gap-x-3 p-3 w-full">
@@ -188,14 +216,81 @@ function CommentCard({ comment }: CommentCardProps) {
         </p>
         <span className="text-xs text-neutral-500 dark:text-neutral-400">{formatFullTimeAgo(createdAt)}</span>
       </div>
-      {isUserConnectedTheCommentator && <CommentCardSettings />}
+      {isUserConnectedTheCommentator && (
+        <CommentCardSettings setIsEditModalOpen={setIsEditModalOpen} setIsDeleteModalOpen={setIsDeleteModalOpen} />
+      )}
+      {isUserConnectedThePostAuthor && <CommentCardDelete comment={comment} setComments={setComments} />}
+      {/* Modals  */}
+      <CommentCardSettingsEditForm
+        comment={comment}
+        isOpen={isEditModalOpen}
+        setIsOpen={setIsEditModalOpen}
+        setComments={setComments}
+      />
+      <CommentCardSettingsDeleteForm
+        comment={comment}
+        isOpen={isDeleteModalOpen}
+        setIsOpen={setIsDeleteModalOpen}
+        setComments={setComments}
+      />
     </li>
   );
 }
 
 // ==================================================================================================================================
 
-function CommentCardSettings() {
+type CommentCardDeleteProps = {
+  comment: CommentsWithUsersByPostIdEndpointProps;
+  setComments: React.Dispatch<React.SetStateAction<CommentsWithUsersByPostIdEndpointProps[]>>;
+};
+
+function CommentCardDelete({ comment, setComments }: CommentCardDeleteProps) {
+  const { content, user } = comment;
+  const { username } = user;
+
+  const handleClick = async () => {
+    const toastId = toast.loading("Suppression du commentaire en cours...");
+    const response = await del(`comments/${comment.id}`);
+
+    if (!response.success) {
+      toast.error(response.message);
+      return;
+    }
+
+    setComments((prevComments) => prevComments.filter((c) => c.id !== comment.id));
+
+    toast.success("Commentaire supprimé avec succès.", { id: toastId });
+  };
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger>
+        <TooltipComponent label="Supprimer le commentaire">
+          <X className="size-4" />
+        </TooltipComponent>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Suppression du commentaire de {username}</AlertDialogTitle>
+          <AlertDialogDescription>Vous supprimerez le commentaire suivant : {content}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Annuler</AlertDialogCancel>
+          <AlertDialogAction onClick={handleClick}>Supprimer</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+// ==================================================================================================================================
+
+type CommentCardSettingsProps = {
+  setIsEditModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsDeleteModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+function CommentCardSettings({ setIsEditModalOpen, setIsDeleteModalOpen }: CommentCardSettingsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -204,8 +299,12 @@ function CommentCardSettings() {
       <DropdownMenuContent>
         <DropdownMenuLabel>Edition</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer">Modifier</DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer">Supprimer</DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => setIsEditModalOpen(true)}>
+          Modifier
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => setIsDeleteModalOpen(true)}>
+          Supprimer
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -213,11 +312,129 @@ function CommentCardSettings() {
 
 // ==================================================================================================================================
 
-type NewCommentProps = {
-  postId: string;
+type CommentCardSettingsEditFormProps = {
+  comment: CommentsWithUsersByPostIdEndpointProps;
+  isOpen: boolean;
+  setComments: React.Dispatch<React.SetStateAction<CommentsWithUsersByPostIdEndpointProps[]>>;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function NewComment({ postId }: NewCommentProps) {
+function CommentCardSettingsEditForm({ comment, isOpen, setIsOpen, setComments }: CommentCardSettingsEditFormProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const { id, content } = comment;
+  const form = useForm<z.infer<typeof schemaNewCommentForm>>({
+    resolver: zodResolver(schemaNewCommentForm),
+    defaultValues: {
+      content,
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof schemaNewCommentForm>) => {
+    const toastId = toast.loading("Mise à jour du commentaire en cours...");
+    setIsLoading(true);
+
+    const commentUpdated = await patch<CommentsWithUsersByPostIdEndpointProps>(`comments/${id}`, values);
+
+    if (!commentUpdated.success) {
+      toast.error(commentUpdated.message);
+      return;
+    }
+
+    setComments((prevComments) =>
+      prevComments.map((c) => (c.id === id ? { ...c, content: values.content, updatedAt: new Date() } : c))
+    );
+
+    setIsLoading(false);
+    toast.success(commentUpdated.message, { id: toastId });
+    setIsOpen(false);
+  };
+
+  return (
+    <Credenza open={isOpen} onOpenChange={setIsOpen}>
+      <CredenzaContent>
+        <CredenzaHeader>
+          <CredenzaTitle>Modification du commentaire</CredenzaTitle>
+          <CredenzaDescription>Mettez à jour le commentaire ci-dessous.</CredenzaDescription>
+        </CredenzaHeader>
+        <CredenzaBody>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-6">
+              <div className="mt-1">
+                <FormTextAreaField name="content" form={form} placeholder="Modifier la visibilité du commentaire..." />
+              </div>
+              <div className="flex max-md:flex-col justify-end gap-2">
+                <CredenzaClose asChild>
+                  <Button variant="outline">Annuler</Button>
+                </CredenzaClose>
+                <Button className="max-md:order-first" type="submit" isLoading={isLoading}>
+                  Modifier
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CredenzaBody>
+      </CredenzaContent>
+    </Credenza>
+  );
+}
+
+// ==================================================================================================================================
+
+type CommentCardSettingsDeleteFormProps = {
+  comment: CommentsWithUsersByPostIdEndpointProps;
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setComments: React.Dispatch<React.SetStateAction<CommentsWithUsersByPostIdEndpointProps[]>>;
+};
+
+function CommentCardSettingsDeleteForm({
+  comment,
+  isOpen,
+  setIsOpen,
+  setComments,
+}: CommentCardSettingsDeleteFormProps) {
+  const { id } = comment;
+
+  const handleClick = async () => {
+    const toastId = toast.loading("Suppression du commentaire en cours...");
+
+    const commentDeleted = await del(`comments/${id}`);
+
+    if (!commentDeleted.success) {
+      toast.error(commentDeleted.message);
+      return;
+    }
+
+    setComments((prevComments) => prevComments.filter((c) => c.id !== comment.id));
+
+    toast.success(commentDeleted.message, { id: toastId });
+    setIsOpen(false);
+  };
+
+  return (
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Suppression de votre commentaire</AlertDialogTitle>
+          <AlertDialogDescription>Vous supprimerez le commentaire suivant : {comment.content}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Annuler</AlertDialogCancel>
+          <AlertDialogAction onClick={handleClick}>Supprimer</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+// ==================================================================================================================================
+
+type NewCommentProps = {
+  postId: string;
+  setComments: React.Dispatch<React.SetStateAction<CommentsWithUsersByPostIdEndpointProps[]>>;
+};
+
+function NewComment({ postId, setComments }: NewCommentProps) {
   const session = useSession();
   const userConnectedId = session.data?.user.id;
   const [isLoading, setIsLoading] = useState(false);
@@ -243,6 +460,9 @@ function NewComment({ postId }: NewCommentProps) {
       return;
     }
 
+    setComments((prevComments) => [...prevComments, newComment.data]);
+
+    setIsLoading(false);
     toast.success(newComment.message, { id: toastId });
     form.reset();
   };

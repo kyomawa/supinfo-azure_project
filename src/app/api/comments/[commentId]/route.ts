@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import type { Comment } from "@prisma/client";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
+import { schemaNewCommentForm } from "@/constants/schema";
 
 // =================================================================================================================
 
@@ -43,6 +44,133 @@ export async function GET(request: NextRequest, { params }: { params: { commentI
       { status: 500 }
     );
   }
+}
+
+// =================================================================================================================
+
+export async function DELETE(request: NextRequest, { params }: { params: { commentId: string } }) {
+  const verif = verifyRequestHeaders(request);
+  if (verif) return verif;
+
+  const { commentId } = params;
+
+  if (!commentId) {
+    return NextResponse.json<ApiResponse<null>>(
+      {
+        success: false,
+        message: "Le paramètre 'commentId' est requis.",
+        data: null,
+      },
+      { status: 400 }
+    );
+  }
+
+  const comment = await prisma.comment.findUnique({
+    where: { id: commentId },
+    include: { post: true },
+  });
+
+  if (!comment) {
+    return NextResponse.json<ApiResponse<null>>(
+      {
+        success: false,
+        message: "Commentaire non trouvé.",
+        data: null,
+      },
+      { status: 404 }
+    );
+  }
+
+  await prisma.notification.deleteMany({
+    where: {
+      commentId: commentId,
+    },
+  });
+
+  await prisma.comment.delete({
+    where: { id: commentId },
+  });
+
+  return NextResponse.json<ApiResponse<null>>(
+    {
+      success: true,
+      message: "Commentaire supprimé avec succès.",
+      data: null,
+    },
+    { status: 200 }
+  );
+}
+
+// =================================================================================================================
+
+export async function PATCH(request: NextRequest, { params }: { params: { commentId: string } }) {
+  const verif = verifyRequestHeaders(request);
+  if (verif) return verif;
+
+  const { commentId } = params;
+
+  if (!commentId) {
+    return NextResponse.json<ApiResponse<null>>(
+      {
+        success: false,
+        message: "Le paramètre 'commentId' est requis.",
+        data: null,
+      },
+      { status: 400 }
+    );
+  }
+
+  const req = await request.json();
+  const parsed = schemaNewCommentForm.safeParse(req);
+
+  if (!parsed.success) {
+    const errors = parsed.error.errors.map((e) => e.message).join(", ");
+    return NextResponse.json<ApiResponse<null>>(
+      {
+        success: false,
+        message: `Erreur dans les données fournies : ${errors}`,
+        data: null,
+      },
+      { status: 400 }
+    );
+  }
+
+  const { content } = parsed.data;
+
+  const comment = await prisma.comment.findUnique({
+    where: { id: commentId },
+  });
+
+  if (!comment) {
+    return NextResponse.json<ApiResponse<null>>(
+      {
+        success: false,
+        message: "Commentaire non trouvé.",
+        data: null,
+      },
+      { status: 404 }
+    );
+  }
+
+  const updatedComment = await prisma.comment.update({
+    where: { id: commentId },
+    data: {
+      content,
+      updatedAt: new Date(),
+    },
+    include: {
+      user: true,
+    },
+  });
+
+  return NextResponse.json<ApiResponse<typeof updatedComment>>(
+    {
+      success: true,
+      message: "Commentaire mis à jour avec succès.",
+      data: updatedComment,
+    },
+    { status: 200 }
+  );
 }
 
 // =================================================================================================================

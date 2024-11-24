@@ -8,6 +8,7 @@ import {
   differenceInMonths,
   differenceInYears,
   differenceInMinutes,
+  differenceInSeconds,
 } from "date-fns";
 
 // =============================================================================================================================================
@@ -43,6 +44,11 @@ export const formatTimeAgo = (date: string | Date) => {
   const now = new Date();
   const createdDate = new Date(date);
 
+  const secondes = differenceInSeconds(now, createdDate);
+  if (secondes < 60) {
+    return `il y a ${secondes} secondes`;
+  }
+
   const minutes = differenceInMinutes(now, createdDate);
   if (minutes < 60) {
     return `il y a ${minutes}m`;
@@ -77,6 +83,11 @@ export const formatTimeAgo = (date: string | Date) => {
 export const formatFullTimeAgo = (date: string | Date) => {
   const now = new Date();
   const createdDate = new Date(date);
+
+  const secondes = differenceInSeconds(now, createdDate);
+  if (secondes < 60) {
+    return `il y a ${secondes} secondes`;
+  }
 
   const minutes = differenceInMinutes(now, createdDate);
   if (minutes < 60) {
