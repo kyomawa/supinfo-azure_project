@@ -3,6 +3,7 @@
 import { FormControl, FormItem, FormLabel, FormMessage, FormField, FormDescription } from "@/components/ui/form";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 // ===================================================================================================
 
@@ -13,6 +14,7 @@ type FormTextAreaFieldProps<TFieldValues extends FieldValues> = {
   isRequired?: boolean;
   placeholder?: string;
   description?: string;
+  className?: string;
   disabled?: boolean;
 };
 
@@ -20,6 +22,7 @@ export default function FormTextAreaField<TFieldValues extends FieldValues>({
   title,
   name,
   form,
+  className,
   isRequired,
   placeholder,
   description,
@@ -37,7 +40,7 @@ export default function FormTextAreaField<TFieldValues extends FieldValues>({
             </FormLabel>
           )}
           <FormControl>
-            <Textarea placeholder={placeholder} disabled={disabled} {...field} />
+            <Textarea placeholder={placeholder} disabled={disabled} {...field} className={cn(className)} />
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />

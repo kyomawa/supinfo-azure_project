@@ -27,7 +27,7 @@ type PostCardEditFormProps = {
   postId: string;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onUpdate: (updatedPost: PostEndpointProps) => void;
+  onUpdate?: (updatedPost: PostEndpointProps) => void;
 };
 
 export default function PostCardEditForm({
@@ -60,7 +60,7 @@ type EditFormProps = {
   tags: string[];
   postId: string;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onUpdate: (updatedPost: PostEndpointProps) => void;
+  onUpdate?: (updatedPost: PostEndpointProps) => void;
 };
 
 function EditForm({ description, tags, postId, setIsOpen, onUpdate }: EditFormProps) {
@@ -101,7 +101,10 @@ function EditForm({ description, tags, postId, setIsOpen, onUpdate }: EditFormPr
     }
 
     toast.success(result.message, { id: toastId });
-    onUpdate(result.data);
+
+    if (onUpdate) {
+      onUpdate(result.data);
+    }
 
     setIsOpen(false);
     setIsLoading(false);

@@ -74,6 +74,41 @@ export const formatTimeAgo = (date: string | Date) => {
 
 // =============================================================================================================================================
 
+export const formatFullTimeAgo = (date: string | Date) => {
+  const now = new Date();
+  const createdDate = new Date(date);
+
+  const minutes = differenceInMinutes(now, createdDate);
+  if (minutes < 60) {
+    return `il y a ${minutes} minutes`;
+  }
+
+  const hours = differenceInHours(now, createdDate);
+  if (hours < 24) {
+    return `il y a ${hours} heures`;
+  }
+
+  const days = differenceInDays(now, createdDate);
+  if (days < 7) {
+    return `il y a ${days} jours`;
+  }
+
+  const weeks = differenceInWeeks(now, createdDate);
+  if (weeks < 4) {
+    return `il y a ${weeks} semaines`;
+  }
+
+  const months = differenceInMonths(now, createdDate);
+  if (months < 12) {
+    return `il y a ${months} mois`;
+  }
+
+  const years = differenceInYears(now, createdDate);
+  return `il y a ${years} ans`;
+};
+
+// =============================================================================================================================================
+
 const imageCompressionOptions = {
   maxSizeMB: 1,
   maxWidthOrHeight: 1200,

@@ -1,34 +1,14 @@
 "use client";
 
 import Video from "../Video";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
 import Image from "@/components/Image";
-import { Ellipsis, Heart, MessageCircle, Send } from "lucide-react";
+import { Heart, MessageCircle, Send } from "lucide-react";
 import UserIcon from "@/components/UserIcon";
 import { useSession } from "next-auth/react";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-
 import { useState } from "react";
-import { Button } from "../ui/button";
-import toast from "react-hot-toast";
-import { del } from "@/utils/apiFn";
 import PostCardEditForm from "./PostCardEditForm";
+import PostCardDelete from "./PostCardDelete";
+import PostCardSettings from "./PostCardSettings";
 
 // ==================================================================================================================================
 
@@ -70,7 +50,7 @@ export default function PostCard({ post, isVideoMuted, setIsVideoMuted, onDelete
           <span className="text-sm font-medium">{username}</span>
         </div>
         {postOwnerIsCurrentUser && (
-          <Settings setIsDeleteModalOpen={setIsDeleteModalOpen} setIsEditModalOpen={setIsEditModalOpen} />
+          <PostCardSettings setIsDeleteModalOpen={setIsDeleteModalOpen} setIsEditModalOpen={setIsEditModalOpen} />
         )}
       </div>
       {/* Post Media */}
@@ -135,78 +115,3 @@ export default function PostCard({ post, isVideoMuted, setIsVideoMuted, onDelete
 }
 
 // ==================================================================================================================================
-
-type SettingsProps = {
-  setIsDeleteModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsEditModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-function Settings({ setIsDeleteModalOpen, setIsEditModalOpen }: SettingsProps) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Ellipsis className="size-6" />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuLabel>Paramètres</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer" onClick={() => setIsEditModalOpen(true)}>
-          Modifier
-        </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer" onClick={() => setIsDeleteModalOpen(true)}>
-          Supprimer
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
-
-// ====================================================================================================================================
-
-type PostCardDeleteProps = {
-  postId: string;
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onDelete: (postId: string) => void;
-};
-
-function PostCardDelete({ isOpen, setIsOpen, postId, onDelete }: PostCardDeleteProps) {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleClick = async () => {
-    const toastId = toast.loading("Suppression de la publication en cours...");
-    setIsLoading(true);
-
-    const res = await del(`posts/${postId}`);
-    if (!res.success) {
-      toast.error(res.message);
-      return;
-    }
-
-    toast.success("Publication supprimée avec succès.", { id: toastId });
-    onDelete(postId);
-    setIsOpen(false);
-    setIsLoading(false);
-  };
-
-  return (
-    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Suppression de la publication</AlertDialogTitle>
-          <AlertDialogDescription>
-            Attention, vous êtes sur le point de supprimer cette publication. Cette action est irréversible.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Annuler</AlertDialogCancel>
-          <Button isLoading={isLoading} onClick={handleClick}>
-            Supprimer
-          </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-}
-
-// ====================================================================================================================================

@@ -49,3 +49,18 @@ export const schemaSettingsCardVisibilityForm = z.object({
 });
 
 // =============================================================================================================================================
+
+export const schemaNewCommentForm = z.object({
+  content: z
+    .string()
+    .min(1, "Le commentaire est requis.")
+    .max(1000, "Le commentaire doit faire moins de 1000 caractères."),
+});
+
+export const schemaNewCommentFormJson = zfd.formData({
+  ...schemaNewCommentForm.shape,
+  postId: zfd.text(),
+  userId: zfd.text(),
+});
+
+// =============================================================================================================================================
