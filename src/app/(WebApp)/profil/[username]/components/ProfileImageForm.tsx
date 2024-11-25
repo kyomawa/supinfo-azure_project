@@ -47,7 +47,7 @@ export default function ProfileImageForm({ image, username, id }: ProfileImageFo
       image: imageFile,
     });
 
-    const response = await patch<User>(`users/${id}`, formData);
+    const response = await patch<User>(`users/${id}/avatar`, formData);
     if (response.success) {
       setActualImage(response.data?.image);
       toast.success(response.message, { id: toastId });

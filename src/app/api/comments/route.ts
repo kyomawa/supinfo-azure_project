@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 import { schemaNewCommentFormJson } from "@/constants/schema";
+import { generateSASURL } from "@/lib/generateSasUrl";
+import { revalidateTag } from "next/cache";
 
 // ==================================================================================================================================
 
@@ -59,10 +61,16 @@ export async function POST(request: NextRequest) {
         content: "a commenté votre publication",
         userId: post.creatorId,
         actorId: userId,
-        commentId: newComment.id,
+        type: "COMMENT",
+        triggerId: newComment.id,
       },
     });
   }
+
+  newComment.user.image = newComment.user.image ? generateSASURL(newComment.user.image) : newComment.user.image;
+
+  revalidateTag(`post-${post.creatorId}-comments`);
+  revalidateTag(`user-${post?.creatorId}-posts`);
 
   return NextResponse.json<ApiResponse<typeof newComment>>(
     {

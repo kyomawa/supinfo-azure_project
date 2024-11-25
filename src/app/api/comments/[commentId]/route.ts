@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type { Comment } from "@prisma/client";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 import { schemaNewCommentForm } from "@/constants/schema";
+import { revalidateTag } from "next/cache";
 
 // =================================================================================================================
 
@@ -83,19 +84,23 @@ export async function DELETE(request: NextRequest, { params }: { params: { comme
 
   await prisma.notification.deleteMany({
     where: {
-      commentId: commentId,
+      triggerId: commentId,
+      type: "COMMENT",
     },
   });
 
-  await prisma.comment.delete({
+  const commentDeleted = await prisma.comment.delete({
     where: { id: commentId },
   });
 
-  return NextResponse.json<ApiResponse<null>>(
+  revalidateTag(`post-${comment.post.creatorId}-comments`);
+  revalidateTag(`user-${comment.post.creatorId}-posts`);
+
+  return NextResponse.json<ApiResponse<Comment>>(
     {
       success: true,
       message: "Commentaire supprimé avec succès.",
-      data: null,
+      data: commentDeleted,
     },
     { status: 200 }
   );

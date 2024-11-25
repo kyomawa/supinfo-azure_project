@@ -62,12 +62,15 @@ export async function POST(request: NextRequest) {
       data: {
         content: `a aimé votre publication.`,
         userId: post.creatorId,
+        type: "LIKE",
+        triggerId: newLike.id,
         actorId: userId,
       },
     });
   }
 
   revalidateTag(`post-${postId}-likes`);
+  revalidateTag(`user-${post?.creatorId}-posts`);
 
   return NextResponse.json<ApiResponse<typeof newLike>>(
     {

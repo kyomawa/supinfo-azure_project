@@ -3,8 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type { User } from "@prisma/client";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 import { ObjectId } from "mongodb";
-import { schemaUpdateProfileImageFormData } from "@/constants/schema";
-import { uploadMediaToAzure } from "@/lib/uploadMediaToAzure";
+import { schemaUpdateProfileForm } from "@/constants/schema";
 import { revalidateTag } from "next/cache";
 import { generateSASURL } from "@/lib/generateSasUrl";
 
@@ -109,8 +108,8 @@ export async function PATCH(request: NextRequest, { params }: { params: { userId
   const verif = verifyRequestHeaders(request);
   if (verif) return verif;
 
-  const formData = await request.formData();
-  const { success, data, error } = schemaUpdateProfileImageFormData.safeParse(formData);
+  const req = await request.json();
+  const { success, data, error } = schemaUpdateProfileForm.safeParse(req);
 
   if (!success) {
     return NextResponse.json<ApiResponse<null>>(
@@ -123,54 +122,55 @@ export async function PATCH(request: NextRequest, { params }: { params: { userId
     );
   }
 
-  const { image } = data;
+  const { name, username, bio } = data;
 
-  const folderPath = `users/${userId}`;
+  const userAlreadyExist = await prisma.user.findFirst({
+    where: {
+      username,
+    },
+  });
 
-  const imageUrl = await uploadMediaToAzure(image, folderPath);
-
-  if (!imageUrl) {
+  if (userAlreadyExist) {
     return NextResponse.json<ApiResponse<null>>(
       {
         success: false,
-        message: "Erreur lors du téléchargement du fichier.",
+        message: "Ce nom d'utilisateur est déjà utilisé.",
         data: null,
       },
-      { status: 500 }
+      { status: 400 }
     );
   }
 
-  const isObjectId = ObjectId.isValid(userId);
-  const conditions = isObjectId ? { id: userId } : { OR: [{ username: userId }, { email: userId }] };
-
-  const user = await prisma.user.findFirst({
-    where: conditions,
+  const user = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      name,
+      username,
+      bio,
+    },
   });
 
   if (!user) {
     return NextResponse.json<ApiResponse<null>>(
       {
         success: false,
-        message: "Utilisateur non trouvé.",
+        message: "Erreur lors de la mise à jour du profil.",
         data: null,
       },
       { status: 404 }
     );
   }
 
-  const updatedUser = await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      image: imageUrl,
-    },
-  });
+  user.image = user.image ? generateSASURL(user.image) : user.image;
 
-  revalidateTag(`user-${userId}`);
+  revalidateTag(`user-${user.username}`);
 
-  return NextResponse.json<ApiResponse<typeof updatedUser>>({
+  return NextResponse.json<ApiResponse<User>>({
     success: true,
     message: "Image de l'utilisateur mise à jour avec succès.",
-    data: updatedUser,
+    data: user,
   });
 }
 

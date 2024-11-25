@@ -22,10 +22,15 @@ export async function GET(request: NextRequest) {
 
   try {
     const posts = await prisma.post.findMany({
+      where: {
+        creator: {
+          visibility: "PUBLIC",
+        },
+      },
       include: {
         creator: true,
-        likes: true,
-        comments: true,
+        likes: { include: { user: true } },
+        comments: { include: { user: true } },
       },
       orderBy: { createdAt: "desc" },
       skip,
@@ -36,9 +41,16 @@ export async function GET(request: NextRequest) {
       ...post,
       creator: {
         ...post.creator,
-        image: post.creator.image ? generateSASURL(post.creator.image) : "",
+        image: post.creator.image ? generateSASURL(post.creator.image) : post.creator.image,
       },
-      mediaUrl: post.mediaUrl ? generateSASURL(post.mediaUrl) : "",
+      comments: post.comments.map((comment) => ({
+        ...comment,
+        creator: {
+          ...comment.user,
+          image: comment.user.image ? generateSASURL(comment.user.image) : comment.user.image,
+        },
+      })),
+      mediaUrl: post.mediaUrl ? generateSASURL(post.mediaUrl) : post.mediaUrl,
     }));
 
     return NextResponse.json<ApiResponse<Post[]>>({

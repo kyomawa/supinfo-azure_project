@@ -44,8 +44,8 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
       },
       include: {
         creator: true,
-        likes: true,
-        comments: true,
+        likes: { include: { user: true } },
+        comments: { include: { user: true } },
       },
       orderBy: { createdAt: "desc" },
       skip,
@@ -56,9 +56,16 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
       ...post,
       creator: {
         ...post.creator,
-        image: post.creator.image ? generateSASURL(post.creator.image) : "",
+        image: post.creator.image ? generateSASURL(post.creator.image) : post.creator.image,
       },
-      mediaUrl: post.mediaUrl ? generateSASURL(post.mediaUrl) : "",
+      comments: post.comments.map((comment) => ({
+        ...comment,
+        creator: {
+          ...comment.user,
+          image: comment.user.image ? generateSASURL(comment.user.image) : comment.user.image,
+        },
+      })),
+      mediaUrl: post.mediaUrl ? generateSASURL(post.mediaUrl) : post.mediaUrl,
     }));
 
     return NextResponse.json<ApiResponse<typeof posts>>({

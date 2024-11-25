@@ -27,7 +27,7 @@ export default function ProfilePostCard({ post, username }: PostCardProps) {
             alt={`Média du créateur ${username}`}
             containerClassName="aspect-square size-full bg-white -z-[1] "
             className="object-cover"
-            sizes="100vw, (min-width: 1024px) 75vw, (min-width: 1536px) 35vw, (min-width: 1921px) 30vw"
+            sizes="100vw, (min-width: 640px) 50vw, (min-width: 1024px) 27.5vw"
             quality={100}
           />
         ) : (
@@ -36,32 +36,45 @@ export default function ProfilePostCard({ post, username }: PostCardProps) {
             alt={`Média du créateur ${username}`}
             containerClassName="aspect-square size-full bg-white -z-[1] "
             className="object-cover"
-            sizes="100vw, (min-width: 1024px) 75vw, (min-width: 1536px) 35vw, (min-width: 1921px) 30vw"
+            sizes="100vw, (min-width: 640px) 50vw, (min-width: 1024px) 27.5vw"
             quality={100}
           />
         )}
-        <motion.div
-          className="absolute inset-0 bg-black/50 flex gap-x-8 items-center justify-center"
-          initial={{ opacity: 0 }}
-          transition={{
-            duration: 0.325,
-            type: "spring",
-            stiffness: 175,
-            damping: 20,
-          }}
-          variants={cardVariant}
-        >
-          <div className="flex gap-x-2">
-            <Heart className="size-6 fill-white text-white" />
-            <span className="text-sm font-semibold">{likes.length}</span>
-          </div>
-          <div className="flex gap-x-2">
-            <MessageCircle className="size-6 fill-white text-white" />
-            <span className="text-sm font-semibold">{comments.length}</span>
-          </div>
-        </motion.div>
+        <Overlay likesCount={likes.length} commentsCount={comments.length} />
       </LinkType>
     </motion.li>
+  );
+}
+
+// ==================================================================================================================================
+
+type OverlayProps = {
+  likesCount: number;
+  commentsCount: number;
+};
+
+export function Overlay({ likesCount, commentsCount }: OverlayProps) {
+  return (
+    <motion.div
+      className="absolute inset-0 bg-black/50 flex gap-x-8 items-center justify-center"
+      initial={{ opacity: 0 }}
+      transition={{
+        duration: 0.325,
+        type: "spring",
+        stiffness: 175,
+        damping: 20,
+      }}
+      variants={cardVariant}
+    >
+      <div className="flex gap-x-2">
+        <Heart className="size-6 fill-white text-white" />
+        <span className="text-sm font-semibold text-white">{likesCount}</span>
+      </div>
+      <div className="flex gap-x-2">
+        <MessageCircle className="size-6 fill-white text-white" />
+        <span className="text-sm font-semibold text-white">{commentsCount}</span>
+      </div>
+    </motion.div>
   );
 }
 

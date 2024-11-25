@@ -4,6 +4,14 @@ import { ACCEPTED_IMAGE_TYPES, MAX_UPLOAD_IMAGE_SIZE, MAX_UPLOAD_SIZE } from "./
 
 // =============================================================================================================================================
 
+export const schemaUpdateProfileForm = z.object({
+  name: z.string().min(1, "Le nom est requis."),
+  username: z.string().min(1, "Le nom d'utilisateur est requis."),
+  bio: z.string().optional(),
+});
+
+// =============================================================================================================================================
+
 export const schemaCreatePostForm = z.object({
   description: z.string().min(1, "La description est requise."),
   tags: z.string().optional(),

@@ -132,19 +132,19 @@ model Follow {
 }
 
 model Notification {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String           @id @default(auto()) @map("_id") @db.ObjectId
   content   String
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isRead    Boolean          @default(false)
+  type      NotificationType @default(OTHER)
+  triggerId String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 
-  user   User   @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade) // Utilisateur qui a reçu la notification
+  user   User   @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
   userId String @db.ObjectId
 
-  actor   User   @relation("ActorNotifications", fields: [actorId], references: [id], onDelete: Cascade) // Utilisateur qui a envoyé la notification
+  actor   User   @relation("ActorNotifications", fields: [actorId], references: [id], onDelete: Cascade)
   actorId String @db.ObjectId
-
-  commentId String? @db.ObjectId
 }
 
 // ================================================= Enums ==========================================================
@@ -153,4 +153,12 @@ enum Visibility {
   PUBLIC
   PRIVATE
   FRIENDS
+}
+
+enum NotificationType {
+  OTHER
+  FOLLOW
+  LIKE
+  COMMENT
+  POST
 }

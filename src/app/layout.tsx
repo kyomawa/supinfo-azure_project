@@ -4,8 +4,9 @@ import { commonMetadata } from "@/constants/metadata";
 import { ViewTransitions } from "next-view-transitions";
 import { Toaster } from "react-hot-toast";
 import NextTopLoader from "nextjs-toploader";
-import { ThemeProvider } from "@/components/ThemeProvider";
+import { ThemeProvider } from "@/components/Providers/ThemeProvider";
 import { SessionProvider } from "next-auth/react";
+import RecoilProvider from "@/components/Providers/RecoilProvider";
 
 export const metadata = commonMetadata;
 
@@ -26,11 +27,11 @@ export default function RootLayout({
           {/* Loading Bar */}
           <NextTopLoader color="#b21e4b" zIndex={10} showSpinner={false} />
           <SessionProvider>
-            {/* Theme */}
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-              {/* App Content */}
-              {children}
-            </ThemeProvider>
+            <RecoilProvider>
+              <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+                {children}
+              </ThemeProvider>
+            </RecoilProvider>
           </SessionProvider>
           {/* Toaster */}
           <Toaster

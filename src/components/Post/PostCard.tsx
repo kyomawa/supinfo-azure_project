@@ -9,6 +9,11 @@ import { useState } from "react";
 import PostCardEditForm from "./PostCardEditForm";
 import PostCardDelete from "./PostCardDelete";
 import PostCardSettings from "./PostCardSettings";
+import { User } from "@prisma/client";
+import { del, post } from "@/utils/apiFn";
+import TooltipComponent from "../TooltipComponent";
+import { cn } from "@/lib/utils";
+import { Link } from "next-view-transitions";
 
 // ==================================================================================================================================
 
@@ -23,8 +28,10 @@ type PostCardProps = {
 export default function PostCard({ post, isVideoMuted, setIsVideoMuted, onDelete, onUpdate }: PostCardProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const { description, mediaUrl, creator, likes, comments, tags } = post;
+  const { description, mediaUrl, creator, comments, tags } = post;
+  const initialLikes = post.likes as unknown as LikesWithUsersByPostIdEndpointProps[];
   const { id, username, image } = creator;
+  const [likes, setLikes] = useState(initialLikes);
   const session = useSession();
   const userId = session.data?.user.id;
   const postOwnerIsCurrentUser = id === userId;
@@ -73,19 +80,13 @@ export default function PostCard({ post, isVideoMuted, setIsVideoMuted, onDelete
         />
       )}
       {/* Post Actions */}
-      <div className="flex gap-x-4 py-2 mt-1 max-md:p-3">
-        {/* Likes Actions + Number  */}
-        <div className="flex items-center gap-x-1">
-          <Heart className="size-6" />
-          <span className="text-sm font-semibold">{likes.length}</span>
-        </div>
-        {/* Message Actions + Number */}
-        <div className="flex items-center gap-x-1">
-          <MessageCircle className="size-6" />
-          <span className="text-sm font-semibold">{comments.length}</span>
-        </div>
-        <Send className="size-6" />
-      </div>
+      <ActionButtons
+        likes={likes as unknown as LikesWithUsersByPostIdEndpointProps[]}
+        comments={comments as unknown as CommentsWithUsersByPostIdEndpointProps[]}
+        creator={creator}
+        postId={post.id}
+        setLikes={setLikes}
+      />
       {/* Post Footer */}
       <p className="text-sm line-clamp-3 max-md:px-3">
         <span className="font-semibold">{username}</span> {description}{" "}
@@ -111,6 +112,67 @@ export default function PostCard({ post, isVideoMuted, setIsVideoMuted, onDelete
         onDelete={onDelete}
       />
     </li>
+  );
+}
+
+// ==================================================================================================================================
+
+type ActionButtonsProps = {
+  postId: string;
+  likes: LikesWithUsersByPostIdEndpointProps[];
+  setLikes: React.Dispatch<React.SetStateAction<LikesWithUsersByPostIdEndpointProps[]>>;
+  comments: CommentsWithUsersByPostIdEndpointProps[];
+  creator: User;
+};
+
+function ActionButtons({ likes, comments, creator, postId, setLikes }: ActionButtonsProps) {
+  const { username } = creator;
+  const session = useSession();
+  const userConnectedId = session.data?.user.id;
+  const linkToPost = `${location.origin}/profil/${username}/${postId}`;
+  const userConnectedHaveLikedPost = likes.some((like) => like.user.id === userConnectedId);
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(linkToPost);
+  };
+
+  const toggleLikePost = async () => {
+    if (userConnectedHaveLikedPost) {
+      const userConnectedLike = likes.find((like) => like.user.id === userConnectedId);
+      if (userConnectedLike) {
+        await del(`likes/${userConnectedLike.id}`);
+        setLikes((prevLikes) => prevLikes.filter((like) => like.id !== userConnectedLike.id));
+      }
+    } else {
+      const newLike = await post<LikesWithUsersByPostIdEndpointProps>("likes", { userId: userConnectedId, postId });
+      if (newLike.success && newLike.data) {
+        setLikes((prevLikes) => [...prevLikes, { ...newLike.data, user: newLike.data.user }]);
+      }
+    }
+  };
+
+  return (
+    <div className="flex gap-x-4 py-2 mt-1 max-md:p-3">
+      {/* Likes Actions + Number  */}
+      <TooltipComponent label="Aimer la publication">
+        <button onClick={toggleLikePost} className="flex items-center gap-x-1">
+          <Heart className={cn("size-6", userConnectedHaveLikedPost && "text-red-500 fill-red-500")} />
+          <span className="text-sm font-semibold">{likes.length}</span>
+        </button>
+      </TooltipComponent>
+      {/* Message Actions + Number */}
+      <TooltipComponent label="Ajouter un commentaire">
+        <Link href={linkToPost} className="flex items-center gap-x-1">
+          <MessageCircle className="size-6" />
+          <span className="text-sm font-semibold">{comments.length}</span>
+        </Link>
+      </TooltipComponent>
+      <TooltipComponent label="Copier le lien vers la publication">
+        <button onClick={copyToClipboard}>
+          <Send className="size-6" />
+        </button>
+      </TooltipComponent>
+    </div>
   );
 }
 

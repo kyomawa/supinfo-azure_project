@@ -11,7 +11,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
   if (verif) return verif;
 
   const followings = await prisma.follow.findMany({
-    where: { followingId: params.userId },
+    where: { followerId: params.userId },
     select: {
       following: true,
     },

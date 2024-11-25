@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 import { revalidateTag } from "next/cache";
+import { Like } from "@prisma/client";
 
 // ==================================================================================================================================
 
@@ -42,29 +43,27 @@ export async function DELETE(request: NextRequest, { params }: { params: { likeI
     );
   }
 
-  await prisma.like.delete({
+  const likeDeleted = await prisma.like.delete({
     where: { id: likeId },
   });
 
   if (like.post.creatorId !== like.userId) {
     await prisma.notification.deleteMany({
       where: {
-        actorId: like.userId,
-        userId: like.post.creatorId,
-        content: {
-          contains: "a aimé votre publication",
-        },
+        type: "LIKE",
+        triggerId: likeDeleted.id,
       },
     });
   }
 
   revalidateTag(`post-${like.postId}-likes`);
+  revalidateTag(`user-${like.post.creatorId}-posts`);
 
-  return NextResponse.json<ApiResponse<null>>(
+  return NextResponse.json<ApiResponse<Like>>(
     {
       success: true,
       message: "Like supprimé avec succès.",
-      data: null,
+      data: likeDeleted,
     },
     { status: 200 }
   );

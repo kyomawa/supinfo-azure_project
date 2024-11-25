@@ -1,5 +1,5 @@
+import ProfileUserModal from "@/components/ProfileUserModal";
 import { get } from "@/utils/apiFn";
-import ProfileUserModal from "./components/ProfileUserModal";
 
 // ==================================================================================================================================
 
