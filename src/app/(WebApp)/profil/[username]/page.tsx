@@ -11,7 +11,12 @@ export default async function Page({ params }: { params: { username: string } })
   const res = await get<User>(`users/${username}`, { tags: ["users", `user-${username}`], revalidateTime: 180 });
   const user = res.data;
 
-  const posts = await get<PostsByUserIdEndpointProps[]>(`users/${user?.id}/posts`, {
+  const userPostCount = await get<string>(`users/${user?.id}/postCount`, {
+    tags: ["posts", `user-${user?.id}-post-count`],
+    revalidateTime: 45,
+  });
+
+  const posts = await get<PostsByUserIdEndpointProps[]>(`users/${user?.id}/posts?take=9`, {
     tags: ["posts", `user-${user?.id}-posts`],
     revalidateTime: 45,
   });
@@ -31,6 +36,7 @@ export default async function Page({ params }: { params: { username: string } })
           {user ? (
             <Profile
               user={user}
+              userPostCount={userPostCount.data || "0"}
               posts={posts.data || []}
               followers={followers.data || []}
               followings={followings.data || []}

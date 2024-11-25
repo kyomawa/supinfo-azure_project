@@ -604,6 +604,11 @@ type OverlayProps = {
 };
 
 function Overlay({ router }: OverlayProps) {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    router.back();
+  };
+
   return (
     <motion.div
       onClick={() => router.back()}
@@ -612,7 +617,7 @@ function Overlay({ router }: OverlayProps) {
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-40 bg-black/50 flex items-start justify-end p-6"
     >
-      <button onClick={() => router.back()}>
+      <button onClick={handleClick}>
         <X className="size-8 text-white/85 hover:text-white duration-200 transition-colors" />
       </button>
     </motion.div>

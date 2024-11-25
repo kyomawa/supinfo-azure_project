@@ -37,17 +37,18 @@ import { del } from "@/utils/apiFn";
 
 type ProfilePageProps = {
   user: User;
+  userPostCount: string;
   posts: PostsByUserIdEndpointProps[];
   followers: User[];
   followings: User[];
 };
 
-export default function Profile({ user, posts, followers, followings }: ProfilePageProps) {
+export default function Profile({ user, posts, followers, followings, userPostCount }: ProfilePageProps) {
   return (
     <section className="flex flex-col gap-y-8">
-      <UserCard user={user} postsCount={posts.length} followers={followers} followings={followings} />
+      <UserCard user={user} followers={followers} followings={followings} userPostCount={userPostCount} />
       <span className="h-px w-full bg-neutral-150 dark:bg-white/10" />
-      <PostList posts={posts} username={user.username} />
+      <PostList posts={posts} username={user.username} userId={user.id} />
     </section>
   );
 }
@@ -56,12 +57,12 @@ export default function Profile({ user, posts, followers, followings }: ProfileP
 
 type UserCardProps = {
   user: User;
-  postsCount: number;
   followers: User[];
   followings: User[];
+  userPostCount: string;
 };
 
-function UserCard({ user: initialUser, postsCount, followers, followings }: UserCardProps) {
+function UserCard({ user: initialUser, followers, followings, userPostCount }: UserCardProps) {
   const [user, setUser] = useState<User>(initialUser);
   const { id, username, image, bio } = user;
   const session = useSession();
@@ -81,7 +82,7 @@ function UserCard({ user: initialUser, postsCount, followers, followings }: User
         {/* Number of posts + followers + followings */}
         <div className="flex gap-x-3">
           <span>
-            <span className="font-semibold">{postsCount}</span> publications
+            <span className="font-semibold">{userPostCount}</span> publications
           </span>
           <UserCardFollower
             followers={followers}

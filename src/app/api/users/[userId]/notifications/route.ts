@@ -9,53 +9,50 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
   const verif = verifyRequestHeaders(request);
   if (verif) return verif;
 
-  try {
-    const notifications = await prisma.notification.findMany({
-      where: { userId: params.userId },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        actor: true,
-        content: true,
-        createdAt: true,
-        isRead: true,
-      },
-    });
+  const url = new URL(request.url);
+  const skipParam = url.searchParams.get("skip");
+  const takeParam = url.searchParams.get("take");
 
-    if (!notifications) {
-      return NextResponse.json<ApiResponse<null>>(
-        {
-          success: false,
-          message: "Notifications non trouvées.",
-          data: null,
-        },
-        { status: 404 }
-      );
-    }
+  const skip = skipParam ? parseInt(skipParam) : 0;
+  const take = takeParam ? parseInt(takeParam) : undefined;
 
-    notifications.map((notification) => {
-      notification.actor.image = notification.actor.image
-        ? generateSASURL(notification.actor.image)
-        : notification.actor.image;
-    });
+  const notifications = await prisma.notification.findMany({
+    where: { userId: params.userId },
+    orderBy: { createdAt: "desc" },
+    skip,
+    take,
+    select: {
+      id: true,
+      actor: true,
+      content: true,
+      createdAt: true,
+      isRead: true,
+    },
+  });
 
-    return NextResponse.json<ApiResponse<NotificationByUserIdEndpointProps[]>>({
-      success: true,
-      message: "Liste des notifications récupérées avec succès.",
-      data: notifications,
-    });
-  } catch (error) {
-    console.error("Erreur lors de la récupération des notifications de l'utilisateur:", error);
-
+  if (!notifications || notifications.length === 0) {
     return NextResponse.json<ApiResponse<null>>(
       {
         success: false,
-        message: "Échec de la récupération des notifications de l'utilisateur.",
+        message: "Aucune notification trouvée.",
         data: null,
       },
-      { status: 500 }
+      { status: 404 }
     );
   }
+
+  const notificationsWithImages = notifications.map((notification) => {
+    notification.actor.image = notification.actor.image
+      ? generateSASURL(notification.actor.image)
+      : notification.actor.image;
+    return notification;
+  });
+
+  return NextResponse.json<ApiResponse<NotificationByUserIdEndpointProps[]>>({
+    success: true,
+    message: "Liste des notifications récupérées avec succès.",
+    data: notificationsWithImages,
+  });
 }
 
 // =================================================================================================================

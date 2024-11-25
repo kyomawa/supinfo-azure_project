@@ -126,27 +126,40 @@ export async function PATCH(request: NextRequest, { params }: { params: { userId
 
   const { name, username, bio } = data;
 
-  const userAlreadyExist = await prisma.user.findFirst({
-    where: {
-      username,
-    },
+  const currentUser = await prisma.user.findUnique({
+    where: { id: userId },
   });
 
-  if (userAlreadyExist) {
+  if (!currentUser) {
     return NextResponse.json<ApiResponse<null>>(
       {
         success: false,
-        message: "Ce nom d'utilisateur est déjà utilisé.",
+        message: "Utilisateur introuvable.",
         data: null,
       },
-      { status: 400 }
+      { status: 404 }
     );
   }
 
+  if (username !== currentUser.username) {
+    const userAlreadyExist = await prisma.user.findFirst({
+      where: { username },
+    });
+
+    if (userAlreadyExist) {
+      return NextResponse.json<ApiResponse<null>>(
+        {
+          success: false,
+          message: "Ce nom d'utilisateur est déjà utilisé.",
+          data: null,
+        },
+        { status: 400 }
+      );
+    }
+  }
+
   const user = await prisma.user.update({
-    where: {
-      id: userId,
-    },
+    where: { id: userId },
     data: {
       name,
       username,
@@ -161,7 +174,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { userId
         message: "Erreur lors de la mise à jour du profil.",
         data: null,
       },
-      { status: 404 }
+      { status: 500 }
     );
   }
 
@@ -171,7 +184,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { userId
 
   return NextResponse.json<ApiResponse<User>>({
     success: true,
-    message: "Image de l'utilisateur mise à jour avec succès.",
+    message: "Profil mis à jour avec succès.",
     data: user,
   });
 }
