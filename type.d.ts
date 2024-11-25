@@ -12,6 +12,7 @@ declare global {
       actor: true;
       content: true;
       createdAt: true;
+      type: true;
       isRead: true;
     };
   }>;
@@ -53,4 +54,10 @@ declare global {
       creator: true;
     };
   }>;
+  type FollowerByUserIdEndpointProps = User & {
+    status: FollowStatus;
+  };
+  type FollowingByUserIdEndpointProps = User & {
+    status: FollowStatus;
+  };
 }

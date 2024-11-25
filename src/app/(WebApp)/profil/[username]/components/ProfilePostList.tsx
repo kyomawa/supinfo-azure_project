@@ -3,22 +3,26 @@
 import { useState } from "react";
 import ProfilePostCard from "./ProfilePostCard";
 import { get } from "@/utils/apiFn";
-import { Loader } from "lucide-react";
+import { Loader, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { User } from "@prisma/client";
 
 // ==================================================================================================================================
 
-type PostListProps = {
+type ProfilePostListProps = {
   posts: PostsByUserIdEndpointProps[];
-  username: string;
-  userId: string;
+  user: User;
+  userConnectedIsSuscribed: boolean;
 };
 
-export default function PostList({ posts: initialPosts, username, userId }: PostListProps) {
+export default function ProfilePostList({ posts: initialPosts, user, userConnectedIsSuscribed }: ProfilePostListProps) {
   const [posts, setPosts] = useState<PostsByUserIdEndpointProps[]>(initialPosts);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialPosts.length === 9);
   const [skip, setSkip] = useState(initialPosts.length);
+
+  const { username, id: userId, visibility } = user;
+  const profileIsHidden = visibility === "PRIVATE" && !userConnectedIsSuscribed;
 
   const loadMorePosts = async () => {
     if (isLoading || !hasMore) return;
@@ -42,10 +46,28 @@ export default function PostList({ posts: initialPosts, username, userId }: Post
     setIsLoading(false);
   };
 
+  return profileIsHidden ? (
+    <PrivateProfileCard />
+  ) : (
+    <CardList posts={posts} username={username} userId={userId} loadMorePosts={loadMorePosts} isLoading={isLoading} />
+  );
+}
+
+// ==================================================================================================================================
+
+type CardListProps = {
+  posts: PostsByUserIdEndpointProps[];
+  username: string;
+  userId: string;
+  loadMorePosts: () => Promise<void>;
+  isLoading: boolean;
+};
+
+function CardList({ posts, username, loadMorePosts, isLoading }: CardListProps) {
   return (
     <>
-      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1 relative">
-        {posts.length > 0 ? (
+      {posts.length > 0 ? (
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1 relative">
           <>
             {posts.map((post) => (
               <ProfilePostCard key={post.id} post={post} username={username} />
@@ -57,10 +79,10 @@ export default function PostList({ posts: initialPosts, username, userId }: Post
               className="w-full absolute left-0 right-0 bottom-0 h-1 -z-10"
             />
           </>
-        ) : (
-          <li className="py-2 text-center">Aucun contenu à afficher...</li>
-        )}
-      </ul>
+        </ul>
+      ) : (
+        <p className="py-2 text-center text-lg">Cet utilisateur n&apos;a pas encore publié de publication.</p>
+      )}
       <AnimatePresence>
         {isLoading && (
           <div className="py-2 justify-center flex">
@@ -73,3 +95,19 @@ export default function PostList({ posts: initialPosts, username, userId }: Post
 }
 
 // ==================================================================================================================================
+
+function PrivateProfileCard() {
+  return (
+    <div className="flex gap-x-2 items-center justify-center">
+      <div className="p-3 border rounded-full border-neutral-200 dark:border-white/20">
+        <Lock className="size-7 stroke-1 " />
+      </div>
+      <div className="flex flex-col">
+        <p className="font-medium">Ce compte est privé</p>
+        <p className="text-neutral-500 dark:text-white/40">
+          Vous devez être abonné pour voir les publications de ce profil.
+        </p>
+      </div>
+    </div>
+  );
+}

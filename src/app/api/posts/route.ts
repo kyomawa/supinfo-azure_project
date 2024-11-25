@@ -118,6 +118,23 @@ export async function POST(request: NextRequest) {
     },
   });
 
+  const followers = await prisma.follow.findMany({
+    where: { followingId: creatorId },
+    select: { followerId: true },
+  });
+
+  if (followers.length > 0) {
+    await prisma.notification.createMany({
+      data: followers.map((follower) => ({
+        content: "a publié une nouvelle publication",
+        type: "POST",
+        triggerId: post.id,
+        userId: follower.followerId,
+        actorId: creatorId,
+      })),
+    });
+  }
+
   revalidateTag("posts");
 
   return NextResponse.json<ApiResponse<Post>>(

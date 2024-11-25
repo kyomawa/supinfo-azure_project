@@ -102,13 +102,20 @@ export async function DELETE(request: NextRequest, { params }: { params: { postI
     );
   }
 
+  await prisma.notification.deleteMany({
+    where: {
+      type: "POST",
+      triggerId: postId,
+    },
+  });
+
   revalidateTag("posts");
 
   return NextResponse.json(
     {
       success: true,
       message: "Post supprimé avec succès.",
-      data: null,
+      data: postDeleted,
     },
     { status: 200 }
   );

@@ -20,11 +20,11 @@ export default async function Page({ params }: { params: { username: string } })
     tags: ["posts", `user-${user?.id}-posts`],
     revalidateTime: 45,
   });
-  const followers = await get<User[]>(`users/${user?.id}/followers`, {
+  const followers = await get<FollowerByUserIdEndpointProps[]>(`users/${user?.id}/followers`, {
     tags: ["follows", `user-${user?.id}-followers`],
     revalidateTime: 45,
   });
-  const followings = await get<User[]>(`users/${user?.id}/followings`, {
+  const followings = await get<FollowerByUserIdEndpointProps[]>(`users/${user?.id}/followings`, {
     tags: ["follows", `user-${user?.id}-followings`],
     revalidateTime: 45,
   });

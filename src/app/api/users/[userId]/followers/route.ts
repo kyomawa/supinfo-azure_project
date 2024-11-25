@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import type { User } from "@prisma/client";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 import { generateSASURL } from "@/lib/generateSasUrl";
 
@@ -14,6 +13,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
     where: { followingId: params.userId },
     select: {
       follower: true,
+      status: true,
     },
   });
 
@@ -32,11 +32,12 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
     const user = follow.follower;
     return {
       ...user,
+      status: follow.status,
       image: user.image ? generateSASURL(user.image) : user.image,
     };
   });
 
-  return NextResponse.json<ApiResponse<User[]>>({
+  return NextResponse.json<ApiResponse<FollowerByUserIdEndpointProps[]>>({
     success: true,
     message: "Liste des utilisateurs suivis récupérée avec succès.",
     data: followersUsers,

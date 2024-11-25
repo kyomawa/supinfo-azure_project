@@ -1,8 +1,8 @@
 "use client";
 
-import { User } from "@prisma/client";
+import { Follow, FollowStatus, User } from "@prisma/client";
 import ProfileImageForm from "./ProfileImageForm";
-import PostList from "./ProfilePostList";
+import ProfilePostList from "./ProfilePostList";
 import ProfileEditButton from "./ProfileForm";
 import { useState } from "react";
 import {
@@ -31,7 +31,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
-import { del } from "@/utils/apiFn";
+import { del, post } from "@/utils/apiFn";
 
 // ==================================================================================================================================
 
@@ -39,16 +39,32 @@ type ProfilePageProps = {
   user: User;
   userPostCount: string;
   posts: PostsByUserIdEndpointProps[];
-  followers: User[];
-  followings: User[];
+  followers: FollowerByUserIdEndpointProps[];
+  followings: FollowingByUserIdEndpointProps[];
 };
 
 export default function Profile({ user, posts, followers, followings, userPostCount }: ProfilePageProps) {
+  const session = useSession();
+  const userConnectedId = session.data?.user.id;
+  const userConnectedIsSuscribed = followers.some(
+    (follower) => follower.id === userConnectedId && follower.status !== "PENDING"
+  );
+  const userConnectedOwnTheProfil = userConnectedId === user.id;
+
+  const initialFollowStatus = followers.find((follower) => follower.id === userConnectedId)?.status || null;
+
   return (
     <section className="flex flex-col gap-y-8">
-      <UserCard user={user} followers={followers} followings={followings} userPostCount={userPostCount} />
+      <UserCard
+        user={user}
+        followers={followers}
+        followings={followings}
+        userPostCount={userPostCount}
+        initialFollowStatus={initialFollowStatus}
+        userConnectedOwnTheProfil={userConnectedOwnTheProfil}
+      />
       <span className="h-px w-full bg-neutral-150 dark:bg-white/10" />
-      <PostList posts={posts} username={user.username} userId={user.id} />
+      <ProfilePostList posts={posts} user={user} userConnectedIsSuscribed={userConnectedIsSuscribed} />
     </section>
   );
 }
@@ -57,27 +73,37 @@ export default function Profile({ user, posts, followers, followings, userPostCo
 
 type UserCardProps = {
   user: User;
-  followers: User[];
-  followings: User[];
+  followers: FollowerByUserIdEndpointProps[];
+  followings: FollowingByUserIdEndpointProps[];
   userPostCount: string;
+  initialFollowStatus: FollowStatus | null;
+  userConnectedOwnTheProfil: boolean;
 };
 
-function UserCard({ user: initialUser, followers, followings, userPostCount }: UserCardProps) {
+function UserCard({
+  user: initialUser,
+  followers,
+  initialFollowStatus,
+  followings,
+  userPostCount,
+  userConnectedOwnTheProfil,
+}: UserCardProps) {
   const [user, setUser] = useState<User>(initialUser);
   const { id, username, image, bio } = user;
-  const session = useSession();
-  const userConnectedId = session.data?.user.id;
-  const userConnectedOwnTheProfil = userConnectedId === id;
 
   return (
     <div className="flex gap-x-12 items-center">
       <ProfileImageForm image={image} username={username} id={id} />
       <div className="flex flex-col gap-y-6 w-full">
         {/* Username + Edit or Follow button */}
-        <div className="flex justify-between gap-x-3">
+        <div className="flex justify-between items-center gap-x-3">
           <span className="text-xl">{username}</span>
           {/* Button Edit */}
-          <ProfileEditButton user={user} setUser={setUser} />
+          {userConnectedOwnTheProfil ? (
+            <ProfileEditButton user={user} setUser={setUser} />
+          ) : (
+            <UserCardFollowButton initialFollowStatus={initialFollowStatus} profileUserId={id} />
+          )}
         </div>
         {/* Number of posts + followers + followings */}
         <div className="flex gap-x-3">
@@ -96,9 +122,76 @@ function UserCard({ user: initialUser, followers, followings, userPostCount }: U
           />
         </div>
         {/* Bio */}
-        {bio ? <p>{bio}</p> : <p className="text-neutral-500 dark:text-white/40">Rédiger votre bio...</p>}
+        {bio ? (
+          <p>{bio}</p>
+        ) : userConnectedOwnTheProfil ? (
+          <p className="text-neutral-500 dark:text-white/40">Rédiger votre bio...</p>
+        ) : null}
       </div>
     </div>
+  );
+}
+
+// ==================================================================================================================================
+
+type UserCardFollowButtonProps = {
+  initialFollowStatus: FollowStatus | null;
+  profileUserId: string;
+};
+
+function UserCardFollowButton({ initialFollowStatus, profileUserId }: UserCardFollowButtonProps) {
+  const [followStatus, setFollowStatus] = useState<FollowStatus | null>(initialFollowStatus);
+  const [isLoading, setIsLoading] = useState(false);
+  const { data: session } = useSession();
+  const followerId = session?.user.id as string;
+
+  const handleFollow = async () => {
+    setIsLoading(true);
+    const toastId = toast.loading("Action en cours...");
+
+    if (followStatus === "CONFIRMED" || followStatus === "PENDING") {
+      const response = await del(`follow?followerId=${followerId}&followingId=${profileUserId}`);
+      if (response.success) {
+        toast.success("Vous ne suivez plus cet utilisateur.", { id: toastId });
+        setFollowStatus(null);
+      } else {
+        toast.error(response.message, { id: toastId });
+      }
+    } else {
+      const response = await post<Follow>("follow", {
+        followerId,
+        followingId: profileUserId,
+      });
+      if (response.success) {
+        const newStatus: FollowStatus = response.data.status;
+        toast.success(
+          newStatus === "CONFIRMED" ? "Vous suivez maintenant cet utilisateur." : "Demande de suivi envoyée.",
+          { id: toastId }
+        );
+        setFollowStatus(newStatus);
+      } else {
+        toast.error(response.message, { id: toastId });
+      }
+    }
+
+    setIsLoading(false);
+  };
+
+  const getButtonLabel = () => {
+    if (followStatus === "CONFIRMED") return "Abonné";
+    if (followStatus === "PENDING") return "Demande envoyée";
+    return "Suivre";
+  };
+
+  return (
+    <Button
+      className="md:mr-2"
+      variant={followStatus ? "secondary" : "default"}
+      onClick={handleFollow}
+      isLoading={isLoading}
+    >
+      {getButtonLabel()}
+    </Button>
   );
 }
 
@@ -283,15 +376,20 @@ function UserCardFollowDeleteButton({
 }: UserCardFollowDeleteButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const { data: session } = useSession();
+  const userId = session?.user.id;
 
   const onSubmit = async () => {
     setIsLoading(true);
     const toastId = toast.loading("Suppression en cours...");
 
-    const response = await del(`follow/${id}?type=${type}`);
+    const followerId = type === "follower" ? id : userId;
+    const followingId = type === "follower" ? userId : id;
+
+    const response = await del(`follow?followerId=${followerId}&followingId=${followingId}`);
     if (response.success) {
       toast.success(response.message, { id: toastId });
-      if (setFollows) setFollows((follows) => follows.filter((follow) => follow.id !== id));
+      setFollows((follows) => follows.filter((user) => user.id !== id));
       setIsOpen(false);
     } else {
       toast.error(response.message, { id: toastId });

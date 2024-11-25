@@ -1,26 +1,42 @@
 "use client";
 
 import Image from "@/components/Image";
+import TooltipComponent from "@/components/TooltipComponent";
+import { Button } from "@/components/ui/button";
 import UserIcon from "@/components/UserIcon";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { formatTimeAgo } from "@/lib/utils";
+import { del, post } from "@/utils/apiFn";
+import { Check, X } from "lucide-react";
 import { motion, Variants } from "motion/react";
+import { useSession } from "next-auth/react";
 import { Link } from "next-view-transitions";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 // ==================================================================================================================================
 
 type NotificationItemProps = {
   notification: NotificationByUserIdEndpointProps;
+  updateNotificationContent: (notificationId: string, newContent: string) => void;
+  removeNotification: (notificationId: string) => void;
 };
 
-export default function NotificationItem({ notification }: NotificationItemProps) {
-  const { content, createdAt, actor } = notification;
+export default function NotificationItem({
+  notification,
+  updateNotificationContent,
+  removeNotification,
+}: NotificationItemProps) {
+  const { content, createdAt, actor, type, id: notificationId } = notification;
   const { username, image } = actor;
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const createdSince = formatTimeAgo(createdAt);
 
   return (
-    <motion.li className="relative cursor-pointer p-3" whileHover={isDesktop ? "hover" : ""}>
+    <motion.li
+      className="relative cursor-pointer p-3 flex gap-x-3 justify-between"
+      whileHover={isDesktop ? "hover" : ""}
+    >
       <Link className="flex gap-x-3 items-center" href={`/profil/${actor.username}`}>
         {image ? (
           <Image
@@ -42,6 +58,15 @@ export default function NotificationItem({ notification }: NotificationItemProps
         </div>
       </Link>
 
+      {type === "FOLLOW" && content === "vous a envoyé une demande de suivi" && (
+        <ActionFollowNotification
+          notificationId={notificationId}
+          followerId={actor.id}
+          updateNotificationContent={updateNotificationContent}
+          removeNotification={removeNotification}
+        />
+      )}
+
       {/* Hover Background */}
       <motion.div
         initial={{
@@ -57,6 +82,79 @@ export default function NotificationItem({ notification }: NotificationItemProps
         className="absolute inset-0 -z-[1] rounded-md bg-black/5 dark:bg-white/15"
       />
     </motion.li>
+  );
+}
+
+// =================================================================================================================================
+
+type ActionFollowNotificationProps = {
+  notificationId: string;
+  followerId: string;
+  updateNotificationContent: (notificationId: string, newContent: string) => void;
+  removeNotification: (notificationId: string) => void;
+};
+
+function ActionFollowNotification({
+  notificationId,
+  followerId,
+  updateNotificationContent,
+  removeNotification,
+}: ActionFollowNotificationProps) {
+  const { data: session } = useSession();
+  const followingId = session?.user.id;
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleAccept = async () => {
+    setIsLoading(true);
+    const toastId = toast.loading("Acceptation en cours...");
+
+    const response = await post("follow/accept", {
+      followerId,
+      followingId,
+      notificationId,
+    });
+
+    if (response.success) {
+      toast.success("Demande de suivi acceptée.", { id: toastId });
+      updateNotificationContent(notificationId, "vous suit");
+    } else {
+      toast.error(response.message, { id: toastId });
+    }
+
+    setIsLoading(false);
+  };
+
+  const handleDecline = async () => {
+    setIsLoading(true);
+    const toastId = toast.loading("Refus en cours...");
+
+    const response = await del(
+      `follow/decline?followerId=${followerId}&followingId=${followingId}&notificationId=${notificationId}`
+    );
+
+    if (response.success) {
+      toast.success("Demande de suivi refusée.", { id: toastId });
+      removeNotification(notificationId);
+    } else {
+      toast.error(response.message, { id: toastId });
+    }
+
+    setIsLoading(false);
+  };
+
+  return (
+    <div className="flex gap-x-2 items-center">
+      <TooltipComponent label="Accepter la demande">
+        <Button onClick={handleAccept} isLoading={isLoading}>
+          <Check className="size-4" />
+        </Button>
+      </TooltipComponent>
+      <TooltipComponent label="Refuser la demande">
+        <Button onClick={handleDecline} isLoading={isLoading}>
+          <X className="size-4" />
+        </Button>
+      </TooltipComponent>
+    </div>
   );
 }
 

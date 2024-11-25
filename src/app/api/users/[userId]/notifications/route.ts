@@ -24,6 +24,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
     select: {
       id: true,
       actor: true,
+      type: true,
       content: true,
       createdAt: true,
       isRead: true,

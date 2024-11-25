@@ -41,13 +41,32 @@ export default function NotificationList({ initialNotifications, userId }: Notif
     setIsLoading(false);
   };
 
+  const updateNotificationContent = (notificationId: string, newContent: string) => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.map((notification) =>
+        notification.id === notificationId ? { ...notification, content: newContent } : notification
+      )
+    );
+  };
+
+  const removeNotification = (notificationId: string) => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.filter((notification) => notification.id !== notificationId)
+    );
+  };
+
   return (
     <>
       <ul className="flex flex-col gap-y-4 relative mb-6">
         {notifications.length > 0 ? (
           <>
             {notifications.map((notification) => (
-              <NotificationItem key={notification.id} notification={notification} />
+              <NotificationItem
+                key={notification.id}
+                notification={notification}
+                updateNotificationContent={updateNotificationContent}
+                removeNotification={removeNotification}
+              />
             ))}
             <motion.li
               key={notifications.length}
