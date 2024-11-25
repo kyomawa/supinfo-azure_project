@@ -11,9 +11,10 @@ import PostCard from "./PostCard";
 
 type PostListProps = {
   initialPosts: PostEndpointProps[];
+  urlToFetch: string;
 };
 
-export default function PostList({ initialPosts }: PostListProps) {
+export default function PostList({ initialPosts, urlToFetch }: PostListProps) {
   const [posts, setPosts] = useState<PostEndpointProps[]>(initialPosts);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialPosts.length === 10);
@@ -32,8 +33,8 @@ export default function PostList({ initialPosts }: PostListProps) {
     if (isLoading || !hasMore) return;
     setIsLoading(true);
     try {
-      const result = await get<PostEndpointProps[]>(`/posts?skip=${skip}&take=10`, {
-        tag: "posts",
+      const result = await get<PostEndpointProps[]>(`${urlToFetch}&skip=${skip}`, {
+        tags: ["posts", "likes", "comments"],
         revalidateTime: 45,
       });
 

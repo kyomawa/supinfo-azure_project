@@ -10,8 +10,8 @@ export default async function Page() {
   const userId = session?.user.id;
 
   const response = await get<NotificationByUserIdEndpointProps[]>(`users/${userId}/notifications`, {
-    tag: `notification-${userId}`,
-    revalidateTime: 60,
+    tags: ["notifications", "likes", "comments", "posts", "follows"],
+    revalidateTime: 15,
   });
 
   return (

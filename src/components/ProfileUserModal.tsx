@@ -151,7 +151,12 @@ function PostCard({ post, likes: initialLikes, comments: initialComments }: Post
         isOpen={isEditModalOpen}
         setIsOpen={setIsEditModalOpen}
       />
-      <PostCardDelete postId={post.id} isOpen={isDeleteModalOpen} setIsOpen={setIsDeleteModalOpen} />
+      <PostCardDelete
+        postId={post.id}
+        isOpen={isDeleteModalOpen}
+        setIsOpen={setIsDeleteModalOpen}
+        mustNavigateBack={true}
+      />
     </motion.div>
   );
 }

@@ -7,17 +7,17 @@ export default async function Page({ params }: { params: { username: string; pos
   const { postId } = params;
 
   const post = await get<PostWithCreatorByPostIdEndpointProps>(`posts/${postId}`, {
-    tag: `post-${postId}`,
+    tags: ["posts", `post-${postId}`],
     revalidateTime: 60,
   });
 
   const comments = await get<CommentsWithUsersByPostIdEndpointProps[]>(`posts/${postId}/comments`, {
-    tag: `post-${postId}-comments`,
+    tags: ["comments", `post-${postId}-comments`],
     revalidateTime: 60,
   });
 
   const likes = await get<LikesWithUsersByPostIdEndpointProps[]>(`posts/${postId}/likes`, {
-    tag: `post-${postId}-likes`,
+    tags: ["likes", `post-${postId}-likes`],
     revalidateTime: 60,
   });
 

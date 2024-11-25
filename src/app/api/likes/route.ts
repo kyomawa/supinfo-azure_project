@@ -69,8 +69,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  revalidateTag(`post-${postId}-likes`);
-  revalidateTag(`user-${post?.creatorId}-posts`);
+  revalidateTag("likes");
 
   return NextResponse.json<ApiResponse<typeof newLike>>(
     {

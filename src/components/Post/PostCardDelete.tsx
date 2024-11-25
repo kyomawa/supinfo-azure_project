@@ -13,6 +13,7 @@ import { del } from "@/utils/apiFn";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 
 // ==================================================================================================================================
 
@@ -21,9 +22,11 @@ type PostCardDeleteProps = {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   onDelete?: (postId: string) => void;
+  mustNavigateBack?: boolean;
 };
 
-export default function PostCardDelete({ isOpen, setIsOpen, postId, onDelete }: PostCardDeleteProps) {
+export default function PostCardDelete({ isOpen, setIsOpen, postId, onDelete, mustNavigateBack }: PostCardDeleteProps) {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = async () => {
@@ -39,6 +42,9 @@ export default function PostCardDelete({ isOpen, setIsOpen, postId, onDelete }: 
     toast.success("Publication supprimée avec succès.", { id: toastId });
     if (onDelete) {
       onDelete(postId);
+    }
+    if (mustNavigateBack) {
+      router.back();
     }
     setIsOpen(false);
     setIsLoading(false);

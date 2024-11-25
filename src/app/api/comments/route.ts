@@ -69,8 +69,7 @@ export async function POST(request: NextRequest) {
 
   newComment.user.image = newComment.user.image ? generateSASURL(newComment.user.image) : newComment.user.image;
 
-  revalidateTag(`post-${post.creatorId}-comments`);
-  revalidateTag(`user-${post?.creatorId}-posts`);
+  revalidateTag("comments");
 
   return NextResponse.json<ApiResponse<typeof newComment>>(
     {

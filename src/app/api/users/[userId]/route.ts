@@ -82,6 +82,8 @@ export async function DELETE(request: NextRequest, { params }: { params: { userI
       );
     }
 
+    revalidateTag("users");
+
     return NextResponse.json<ApiResponse<User>>({
       success: true,
       message: "Utilisateur supprimé avec succès.",
@@ -165,7 +167,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { userId
 
   user.image = user.image ? generateSASURL(user.image) : user.image;
 
-  revalidateTag(`user-${user.username}`);
+  revalidateTag("users");
 
   return NextResponse.json<ApiResponse<User>>({
     success: true,

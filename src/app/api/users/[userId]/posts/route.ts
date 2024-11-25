@@ -21,6 +21,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
       tags: true,
       updatedAt: true,
     },
+    orderBy: { createdAt: "desc" },
   });
 
   if (!posts) {

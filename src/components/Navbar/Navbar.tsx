@@ -9,7 +9,10 @@ export default async function Navbar() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const res = await get<User>(`users/${userId}`, { tag: `user-${userId}`, revalidateTime: 180 });
+  const res = await get<User>(`users/${userId}`, {
+    tags: ["users", `user-${userId}`, "userConnected"],
+    revalidateTime: 180,
+  });
   const user = res.data;
 
   return (

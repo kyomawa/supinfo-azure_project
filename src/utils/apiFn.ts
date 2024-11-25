@@ -10,7 +10,7 @@ const apiUrl =
 // =============================================================================================================================================
 
 interface FetchOptions {
-  tag?: string;
+  tags?: string[];
   headers?: Record<string, string>;
   body?: unknown;
   revalidateTime?: number;
@@ -48,7 +48,7 @@ async function get<T>(url: string, options?: FetchOptions): Promise<ApiResponse<
     headers: getHeaders(options),
     next: {
       revalidate: revalidateTime,
-      ...(options?.tag ? { tags: [options.tag] } : {}),
+      ...(options?.tags ? { tags: options.tags } : {}),
     },
     credentials: "include",
   });
@@ -63,7 +63,7 @@ async function post<T>(url: string, body: unknown, options?: FetchOptions): Prom
     method: "POST",
     headers: getHeaders(body, options),
     body: body instanceof FormData ? body : JSON.stringify(body),
-    next: options?.tag ? { tags: [options.tag] } : undefined,
+    next: options?.tags ? { tags: options.tags } : undefined,
     credentials: "include",
   });
 
@@ -77,7 +77,7 @@ async function put<T>(url: string, body: unknown, options?: FetchOptions): Promi
     method: "PUT",
     headers: getHeaders(body, options),
     body: body instanceof FormData ? body : JSON.stringify(body),
-    next: options?.tag ? { tags: [options.tag] } : undefined,
+    next: options?.tags ? { tags: options.tags } : undefined,
     credentials: "include",
   });
 
@@ -91,7 +91,7 @@ async function patch<T>(url: string, body: unknown, options?: FetchOptions): Pro
     method: "PATCH",
     headers: getHeaders(body, options),
     body: body instanceof FormData ? body : JSON.stringify(body),
-    next: options?.tag ? { tags: [options.tag] } : undefined,
+    next: options?.tags ? { tags: options.tags } : undefined,
     credentials: "include",
   });
 
@@ -104,7 +104,7 @@ async function del<T>(url: string, options?: FetchOptions): Promise<ApiResponse<
   const res = await fetch(`${apiUrl}${url}`, {
     method: "DELETE",
     headers: getHeaders(options),
-    next: options?.tag ? { tags: [options.tag] } : undefined,
+    next: options?.tags ? { tags: options.tags } : undefined,
     credentials: "include",
   });
 

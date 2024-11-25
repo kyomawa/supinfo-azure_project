@@ -7,8 +7,11 @@ import { get } from "@/utils/apiFn";
 export const metadata = discoveryMetadata;
 
 export default async function Page() {
-  const posts = await get<PostEndpointProps[]>("posts?take=10", { tag: "posts", revalidateTime: 45 });
+  const posts = await get<PostEndpointProps[]>("posts?take=10", {
+    tags: ["posts", "likes", "comments"],
+    revalidateTime: 45,
+  });
 
-  return <PostContainer initialPosts={posts.data || []} />;
+  return <PostContainer initialPosts={posts.data || []} urlToFetch="posts?take=10" />;
 }
 // ==================================================================================================================================

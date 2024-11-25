@@ -93,8 +93,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { comme
     where: { id: commentId },
   });
 
-  revalidateTag(`post-${comment.post.creatorId}-comments`);
-  revalidateTag(`user-${comment.post.creatorId}-posts`);
+  revalidateTag("comments");
 
   return NextResponse.json<ApiResponse<Comment>>(
     {

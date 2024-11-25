@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
+import { revalidateTag } from "next/cache";
 
 // =============================================================================
 
@@ -56,6 +57,8 @@ export async function POST(request: NextRequest) {
       triggerId: follow.id,
     },
   });
+
+  revalidateTag("follows");
 
   return NextResponse.json({
     success: true,

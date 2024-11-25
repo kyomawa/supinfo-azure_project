@@ -56,8 +56,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { likeI
     });
   }
 
-  revalidateTag(`post-${like.postId}-likes`);
-  revalidateTag(`user-${like.post.creatorId}-posts`);
+  revalidateTag("likes");
 
   return NextResponse.json<ApiResponse<Like>>(
     {

@@ -41,7 +41,7 @@ export default function PostCard({ post, isVideoMuted, setIsVideoMuted, onDelete
     <li className="flex flex-col snap-center ">
       {/* User Info + Settings */}
       <div className="flex justify-between items-center max-md:p-3 py-2.5">
-        <div className="flex items-center gap-x-2.5 ">
+        <Link href={`/profil/${username}`} className="flex items-center gap-x-2.5 ">
           {image ? (
             <Image
               src={image}
@@ -55,7 +55,7 @@ export default function PostCard({ post, isVideoMuted, setIsVideoMuted, onDelete
             <UserIcon className="size-8 max-sm:aspect-square rounded-full" />
           )}
           <span className="text-sm font-medium">{username}</span>
-        </div>
+        </Link>
         {postOwnerIsCurrentUser && (
           <PostCardSettings setIsDeleteModalOpen={setIsDeleteModalOpen} setIsEditModalOpen={setIsEditModalOpen} />
         )}

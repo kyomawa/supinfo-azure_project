@@ -81,7 +81,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { postI
     );
   }
 
-  // Supprimer le média associé
   if (post.mediaUrl) {
     await deleteMediaFromAzure(post.mediaUrl);
   }
