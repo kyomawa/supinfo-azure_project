@@ -2,6 +2,7 @@ import "server-only";
 
 import {
   BlobSASPermissions,
+  BlobSASSignatureValues,
   generateBlobSASQueryParameters,
   SASProtocol,
   StorageSharedKeyCredential,
@@ -21,14 +22,14 @@ export function generateSASURL(blobUrl: string): string {
   const containerName = url.pathname.split("/")[1];
   const blobName = url.pathname.split("/").slice(2).join("/");
 
-  const sasOptions = {
+  const sasOptions: BlobSASSignatureValues = {
     containerName,
     blobName,
     permissions: BlobSASPermissions.parse("r"),
-    startsOn: new Date(),
-    expiresOn: new Date(new Date().valueOf() + 12 * 3600 * 1000),
+    startsOn: new Date(new Date().valueOf() - 5 * 60 * 1000),
+    expiresOn: new Date(new Date().valueOf() + 1 * 3600 * 1000),
     protocol: SASProtocol.Https,
-    version: "2024-11-04",
+    version: "2025-01-05",
   };
   const credential = blobServiceClient.credential as StorageSharedKeyCredential;
 

@@ -25,7 +25,7 @@ export default function NotificationList({ initialNotifications, userId }: Notif
 
     const res = await get<NotificationByUserIdEndpointProps[]>(`users/${userId}/notifications?take=20&skip=${skip}`, {
       tags: ["notifications", "likes", "comments", "posts", "follows"],
-      revalidateTime: 15,
+      revalidateTime: 45,
     });
 
     if (res.success && res.data) {

@@ -11,7 +11,7 @@ export default async function Page() {
 
   const response = await get<NotificationByUserIdEndpointProps[]>(`users/${userId}/notifications?take=20`, {
     tags: ["notifications", "likes", "comments", "posts", "follows"],
-    revalidateTime: 15,
+    revalidateTime: 45,
   });
 
   return (
