@@ -129,7 +129,8 @@ function ActionButtons({ likes, comments, creator, postId, setLikes }: ActionBut
   const { username } = creator;
   const session = useSession();
   const userConnectedId = session.data?.user.id;
-  const linkToPost = `${location.origin}/profil/${username}/${postId}`;
+  const linkToPost = typeof window !== "undefined" ? `${window.location.origin}/profil/${username}/${postId}` : "";
+
   const userConnectedHaveLikedPost = likes.some((like) => like.user.id === userConnectedId);
 
   const copyToClipboard = () => {

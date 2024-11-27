@@ -63,14 +63,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       return true;
     },
-    jwt({ token, user }) {
+    async jwt({ token, user, account }) {
+      if (account) {
+        token.accessToken = account.access_token;
+        token.idToken = account.id_token;
+      }
       if (user) {
         token.id = user.id;
       }
       return token;
     },
-    session({ session, token }) {
+    async session({ session, token }) {
       session.user.id = token.id as string;
+      session.accessToken = token.accessToken as string;
+      session.idToken = token.idToken as string;
       return session;
     },
   },
