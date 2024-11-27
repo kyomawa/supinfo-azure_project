@@ -6,7 +6,7 @@ import { revalidateTag } from "next/cache";
 // =============================================================================
 
 export async function POST(request: NextRequest) {
-  const verif = verifyRequestHeaders(request);
+  const verif = await verifyRequestHeaders(request);
   if (verif) return verif;
 
   const { followerId, followingId } = await request.json();
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
 // =============================================================================
 
 export async function DELETE(request: NextRequest) {
-  const verif = verifyRequestHeaders(request);
+  const verif = await verifyRequestHeaders(request);
   if (verif) return verif;
 
   const url = new URL(request.url);

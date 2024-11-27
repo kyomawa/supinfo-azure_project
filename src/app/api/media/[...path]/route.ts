@@ -5,7 +5,7 @@ import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 // ========================================================================================================================
 
 export async function GET(request: NextRequest, { params }: { params: { path: string[] } }) {
-  const verif = verifyRequestHeaders(request);
+  const verif = await verifyRequestHeaders(request, false);
   if (verif) return verif;
 
   const { path } = params;

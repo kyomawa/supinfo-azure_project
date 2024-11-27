@@ -6,7 +6,7 @@ import { generateSASURL } from "@/lib/generateSasUrl";
 // =================================================================================================================
 
 export async function GET(request: NextRequest, { params }: { params: { userId: string } }) {
-  const verif = verifyRequestHeaders(request);
+  const verif = await verifyRequestHeaders(request);
   if (verif) return verif;
 
   const { userId } = params;

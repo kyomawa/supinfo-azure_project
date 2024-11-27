@@ -7,7 +7,7 @@ import { Like } from "@prisma/client";
 // ==================================================================================================================================
 
 export async function DELETE(request: NextRequest, { params }: { params: { likeId: string } }) {
-  const verif = verifyRequestHeaders(request);
+  const verif = await verifyRequestHeaders(request);
   if (verif) return verif;
 
   const { likeId } = params;

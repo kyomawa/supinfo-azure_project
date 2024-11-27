@@ -10,7 +10,7 @@ import { generateSASURL } from "@/lib/generateSasUrl";
 // =================================================================================================================
 
 export async function GET(request: NextRequest, { params }: { params: { userId: string } }) {
-  const verif = verifyRequestHeaders(request);
+  const verif = await verifyRequestHeaders(request);
   if (verif) return verif;
 
   try {
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
 // =================================================================================================================
 
 export async function DELETE(request: NextRequest, { params }: { params: { userId: string } }) {
-  const verif = verifyRequestHeaders(request);
+  const verif = await verifyRequestHeaders(request);
   if (verif) return verif;
 
   try {
@@ -107,7 +107,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { userI
 
 export async function PATCH(request: NextRequest, { params }: { params: { userId: string } }) {
   const { userId } = params;
-  const verif = verifyRequestHeaders(request);
+  const verif = await verifyRequestHeaders(request);
   if (verif) return verif;
 
   const req = await request.json();

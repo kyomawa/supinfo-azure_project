@@ -10,7 +10,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(request: NextRequest, { params }: { params: { userId: string } }) {
   const { userId } = params;
-  const verif = verifyRequestHeaders(request);
+  const verif = await verifyRequestHeaders(request);
   if (verif) return verif;
 
   const formData = await request.formData();

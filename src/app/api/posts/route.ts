@@ -10,7 +10,7 @@ import { revalidateTag } from "next/cache";
 // ==================================================================================================================================
 
 export async function GET(request: NextRequest) {
-  const verif = verifyRequestHeaders(request);
+  const verif = await verifyRequestHeaders(request);
   if (verif) return verif;
 
   const url = new URL(request.url);
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
 // ==================================================================================================================================
 
 export async function POST(request: NextRequest) {
-  const verif = verifyRequestHeaders(request);
+  const verif = await verifyRequestHeaders(request);
   if (verif) return verif;
 
   const formData = await request.formData();

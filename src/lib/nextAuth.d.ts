@@ -7,16 +7,11 @@ declare module "next-auth" {
 
   interface Session extends DefaultSession {
     user: User;
-    accessToken?: string;
-    idToken?: string;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     username?: string;
-    id?: string;
-    accessToken?: string;
-    idToken?: string;
   }
 }

@@ -6,7 +6,7 @@ import { revalidateTag } from "next/cache";
 // ==================================================================================================================================
 
 export async function POST(request: NextRequest) {
-  const verif = verifyRequestHeaders(request);
+  const verif = await verifyRequestHeaders(request);
   if (verif) return verif;
 
   const { userId, postId } = await request.json();

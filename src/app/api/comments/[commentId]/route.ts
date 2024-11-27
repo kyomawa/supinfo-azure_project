@@ -8,7 +8,7 @@ import { revalidateTag } from "next/cache";
 // =================================================================================================================
 
 export async function GET(request: NextRequest, { params }: { params: { commentId: string } }) {
-  const verif = verifyRequestHeaders(request);
+  const verif = await verifyRequestHeaders(request);
   if (verif) return verif;
 
   try {
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest, { params }: { params: { commentI
 // =================================================================================================================
 
 export async function DELETE(request: NextRequest, { params }: { params: { commentId: string } }) {
-  const verif = verifyRequestHeaders(request);
+  const verif = await verifyRequestHeaders(request);
   if (verif) return verif;
 
   const { commentId } = params;
@@ -108,7 +108,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { comme
 // =================================================================================================================
 
 export async function PATCH(request: NextRequest, { params }: { params: { commentId: string } }) {
-  const verif = verifyRequestHeaders(request);
+  const verif = await verifyRequestHeaders(request);
   if (verif) return verif;
 
   const { commentId } = params;
