@@ -20,10 +20,11 @@ import { User } from "@prisma/client";
 type ProfileImageFormProps = {
   id: string;
   image: string | null;
+  userConnectedOwnTheProfil: boolean;
   username: string;
 };
 
-export default function ProfileImageForm({ image, username, id }: ProfileImageFormProps) {
+export default function ProfileImageForm({ image, username, id, userConnectedOwnTheProfil }: ProfileImageFormProps) {
   const [actualImage, setActualImage] = useState<string | null>(image);
   const [compressedFile, setCompressedFile] = useState<File | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
@@ -84,7 +85,7 @@ export default function ProfileImageForm({ image, username, id }: ProfileImageFo
                   onHoverEnd={() => setIsHover(false)}
                   className={cn(
                     "aspect-square relative size-full min-[500px]:size-56 rounded-full",
-                    !isLoading && "cursor-pointer",
+
                     isImageLoading && actualImage && "bg-primary-600/85 dark:bg-primary-300/85"
                   )}
                 >
@@ -96,7 +97,7 @@ export default function ProfileImageForm({ image, username, id }: ProfileImageFo
                     )}
                   </AnimatePresence>
                   <AnimatePresence>
-                    {isHover && (
+                    {isHover && userConnectedOwnTheProfil && (
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -128,8 +129,12 @@ export default function ProfileImageForm({ image, username, id }: ProfileImageFo
                     </div>
                   )}
                   <Input
-                    className="z-[1] absolute size-full inset-0 opacity-0"
+                    className={cn(
+                      "z-[1] absolute size-full inset-0 opacity-0 disabled:cursor-auto disabled:hidden",
+                      !isLoading && userConnectedOwnTheProfil && "cursor-pointer"
+                    )}
                     variant="file"
+                    disabled={!userConnectedOwnTheProfil}
                     type="file"
                     name={name}
                     ref={ref}

@@ -21,17 +21,6 @@ export async function GET(_request: NextRequest, { params }: { params: { userId:
 
   const postCount = await prisma.post.count({ where: { creatorId: userId } });
 
-  if (!postCount) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Erreur lors de la récupération du nombre de posts.",
-        data: null,
-      },
-      { status: 500 }
-    );
-  }
-
   return NextResponse.json({
     success: true,
     message: "Nombre de posts récupéré avec succès.",

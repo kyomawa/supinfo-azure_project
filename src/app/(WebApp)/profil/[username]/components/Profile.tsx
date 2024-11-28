@@ -4,7 +4,7 @@ import { Follow, FollowStatus, User } from "@prisma/client";
 import ProfileImageForm from "./ProfileImageForm";
 import ProfilePostList from "./ProfilePostList";
 import ProfileEditButton from "./ProfileForm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Credenza,
   CredenzaBody,
@@ -37,13 +37,21 @@ import { del, post } from "@/utils/apiFn";
 
 type ProfilePageProps = {
   user: User;
+  mustHideFollows: boolean;
   userPostCount: string;
   posts: PostsByUserIdEndpointProps[];
   followers: FollowerByUserIdEndpointProps[];
   followings: FollowingByUserIdEndpointProps[];
 };
 
-export default function Profile({ user, posts, followers, followings, userPostCount }: ProfilePageProps) {
+export default function Profile({
+  user,
+  posts,
+  followers,
+  followings,
+  userPostCount,
+  mustHideFollows,
+}: ProfilePageProps) {
   const session = useSession();
   const userConnectedId = session.data?.user.id;
   const userConnectedIsSuscribed = followers.some(
@@ -60,6 +68,7 @@ export default function Profile({ user, posts, followers, followings, userPostCo
         followers={followers}
         followings={followings}
         userPostCount={userPostCount}
+        mustHideFollows={mustHideFollows}
         initialFollowStatus={initialFollowStatus}
         userConnectedOwnTheProfil={userConnectedOwnTheProfil}
       />
@@ -77,6 +86,7 @@ type UserCardProps = {
   followings: FollowingByUserIdEndpointProps[];
   userPostCount: string;
   initialFollowStatus: FollowStatus | null;
+  mustHideFollows: boolean;
   userConnectedOwnTheProfil: boolean;
 };
 
@@ -86,6 +96,7 @@ function UserCard({
   initialFollowStatus,
   followings,
   userPostCount,
+  mustHideFollows,
   userConnectedOwnTheProfil,
 }: UserCardProps) {
   const [user, setUser] = useState<User>(initialUser);
@@ -93,7 +104,12 @@ function UserCard({
 
   return (
     <div className="flex gap-x-12 items-center">
-      <ProfileImageForm image={image} username={username} id={id} />
+      <ProfileImageForm
+        image={image}
+        username={username}
+        id={id}
+        userConnectedOwnTheProfil={userConnectedOwnTheProfil}
+      />
       <div className="flex flex-col gap-y-6 w-full">
         {/* Username + Edit or Follow button */}
         <div className="flex justify-between items-center gap-x-3">
@@ -111,11 +127,13 @@ function UserCard({
             <span className="font-semibold">{userPostCount}</span> publications
           </span>
           <UserCardFollower
+            mustHideFollows={mustHideFollows}
             followers={followers}
             username={username}
             userConnectedOwnTheProfil={userConnectedOwnTheProfil}
           />
           <UserCardFollowing
+            mustHideFollows={mustHideFollows}
             followings={followings}
             username={username}
             userConnectedOwnTheProfil={userConnectedOwnTheProfil}
@@ -144,6 +162,10 @@ function UserCardFollowButton({ initialFollowStatus, profileUserId }: UserCardFo
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
   const followerId = session?.user.id as string;
+
+  useEffect(() => {
+    setFollowStatus(initialFollowStatus);
+  }, [initialFollowStatus]);
 
   const handleFollow = async () => {
     setIsLoading(true);
@@ -198,20 +220,34 @@ function UserCardFollowButton({ initialFollowStatus, profileUserId }: UserCardFo
 // ==================================================================================================================================
 
 type UserCardFollowerProps = {
-  followers: User[];
+  mustHideFollows: boolean;
+  followers: FollowerByUserIdEndpointProps[];
   username: string;
   userConnectedOwnTheProfil: boolean;
 };
 
-function UserCardFollower({ followers: initialFollowers, username, userConnectedOwnTheProfil }: UserCardFollowerProps) {
-  const [followers, setFollowers] = useState<User[]>(initialFollowers);
+function UserCardFollower({
+  followers: initialFollowers,
+  username,
+  userConnectedOwnTheProfil,
+  mustHideFollows,
+}: UserCardFollowerProps) {
+  const [followers, setFollowers] = useState(initialFollowers);
+  const followersConfirmed = followers.filter((follower) => follower.status === "CONFIRMED");
   const [isOpen, setIsOpen] = useState(false);
+
+  if (mustHideFollows)
+    return (
+      <span>
+        <span className="font-semibold">{followersConfirmed.length}</span> abonné(e)s
+      </span>
+    );
 
   return (
     <Credenza open={isOpen} onOpenChange={setIsOpen}>
       <CredenzaTrigger>
         <span>
-          <span className="font-semibold">{followers.length}</span> abonné(e)s
+          <span className="font-semibold">{followersConfirmed.length}</span> abonné(e)s
         </span>
       </CredenzaTrigger>
       <CredenzaContent disableOutsideClick={false} className="md:p-0">
@@ -266,7 +302,8 @@ function UserCardFollower({ followers: initialFollowers, username, userConnected
 // ==================================================================================================================================
 
 type UserCardFollowingProps = {
-  followings: User[];
+  mustHideFollows: boolean;
+  followings: FollowerByUserIdEndpointProps[];
   username: string;
   userConnectedOwnTheProfil: boolean;
 };
@@ -275,15 +312,24 @@ function UserCardFollowing({
   followings: initialFollowings,
   username,
   userConnectedOwnTheProfil,
+  mustHideFollows,
 }: UserCardFollowingProps) {
-  const [followings, setFollowings] = useState<User[]>(initialFollowings);
+  const [followings, setFollowings] = useState(initialFollowings);
+  const followingsConfirmed = followings.filter((following) => following.status === "CONFIRMED");
   const [isOpen, setIsOpen] = useState(false);
+
+  if (mustHideFollows)
+    return (
+      <span>
+        <span className="font-semibold">{followingsConfirmed.length}</span> suivi(e)s
+      </span>
+    );
 
   return (
     <Credenza open={isOpen} onOpenChange={setIsOpen}>
       <CredenzaTrigger>
         <span>
-          <span className="font-semibold">{followings.length}</span> suivi(e)s
+          <span className="font-semibold">{followingsConfirmed.length}</span> suivi(e)s
         </span>
       </CredenzaTrigger>
       <CredenzaContent disableOutsideClick={false} className="md:p-0">
@@ -362,7 +408,7 @@ type UserCardFollowDeleteButtonProps = {
   description: string;
   buttonText: string;
   type: string;
-  setFollows: React.Dispatch<React.SetStateAction<User[]>>;
+  setFollows: React.Dispatch<React.SetStateAction<FollowerByUserIdEndpointProps[]>>;
   id: string;
 };
 

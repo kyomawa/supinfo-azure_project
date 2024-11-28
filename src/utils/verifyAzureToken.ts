@@ -27,6 +27,7 @@ async function validateAzureADToken(token: string): Promise<boolean> {
 // =============================================================================================================================================
 
 export async function verifyAzureToken(request: NextRequest): Promise<NextResponse | null> {
+  if (process.env.NODE_ENV === "development") return null;
   const authHeader = request.headers.get("Authorization") || request.headers.get("authorization");
 
   if (authHeader && authHeader.startsWith("Bearer ")) {

@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 
 declare global {
   type ApiResponse<T> = { success: true; message: string; data: T } | { success: false; message: string; data: null };

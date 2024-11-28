@@ -2,11 +2,15 @@ import { profileMetadata } from "@/constants/metadata";
 import { get } from "@/utils/apiFn";
 import { User } from "@prisma/client";
 import Profile from "./components/Profile";
+import { auth } from "@/lib/auth";
 
 export const metadata = profileMetadata;
 
 export default async function Page({ params }: { params: { username: string } }) {
   const { username } = params;
+
+  const session = await auth();
+  const userConnectedId = session?.user?.id;
 
   const res = await get<User>(`users/${username}`, { tags: ["users", `user-${username}`], revalidateTime: 180 });
   const user = res.data;
@@ -29,6 +33,20 @@ export default async function Page({ params }: { params: { username: string } })
     revalidateTime: 45,
   });
 
+  let isFollowing = false;
+
+  if (followers.data) {
+    followers.data.map((follower) => {
+      if (follower.id === userConnectedId) {
+        isFollowing = true;
+      }
+    });
+  }
+
+  const mustHideFollows = !isFollowing && (user?.visibility === "PRIVATE" || user?.visibility === "FRIENDS");
+
+  console.log(mustHideFollows);
+
   return (
     <div className="md:p-6 pageHeight 2xl:pr-36">
       <div className="specialProfileContainer">
@@ -36,6 +54,7 @@ export default async function Page({ params }: { params: { username: string } })
           {user ? (
             <Profile
               user={user}
+              mustHideFollows={mustHideFollows}
               userPostCount={userPostCount.data || "0"}
               posts={posts.data || []}
               followers={followers.data || []}
