@@ -1,7 +1,7 @@
 import { schemaUpdateProfileImageFormData } from "@/constants/schema";
 import { prisma } from "@/lib/prisma";
 import { uploadMediaToAzure } from "@/lib/uploadMediaToAzure";
-import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
+import verifyRequestHeaders from "@/utils/verifyRequestHeaders";
 import { ObjectId } from "mongodb";
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";

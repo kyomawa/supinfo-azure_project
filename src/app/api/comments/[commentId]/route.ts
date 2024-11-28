@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import type { Comment } from "@prisma/client";
-import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
+import verifyRequestHeaders from "@/utils/verifyRequestHeaders";
 import { schemaNewCommentForm } from "@/constants/schema";
 import { revalidateTag } from "next/cache";
 

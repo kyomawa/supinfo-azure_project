@@ -1,6 +1,7 @@
 "use server";
 
 import "server-only";
+import { getAzureToken } from "./azureTokenCache";
 
 // =============================================================================================================================================
 
@@ -19,7 +20,7 @@ interface FetchOptions {
 const API_KEY_HEADER = "x-sap-secret-api-key";
 const API_KEY = process.env.SAP_SECRET_API_KEY;
 
-function getHeaders(body?: unknown, options?: FetchOptions): HeadersInit {
+function getHeaders(body?: unknown, options?: FetchOptions, azureToken?: string): HeadersInit {
   const isServerSide = typeof window === "undefined";
   const headers: HeadersInit = {};
 
@@ -29,6 +30,10 @@ function getHeaders(body?: unknown, options?: FetchOptions): HeadersInit {
 
   if (options?.headers) {
     Object.assign(headers, options.headers);
+  }
+
+  if (azureToken) {
+    headers["Authorization"] = `Bearer ${azureToken}`;
   }
 
   if (isServerSide && API_KEY) {
@@ -42,10 +47,11 @@ function getHeaders(body?: unknown, options?: FetchOptions): HeadersInit {
 
 async function get<T>(url: string, options?: FetchOptions): Promise<ApiResponse<T>> {
   const revalidateTime = options?.revalidateTime || 3600;
+  const azureToken = await getAzureToken();
 
   const res = await fetch(`${apiUrl}${url}`, {
     method: "GET",
-    headers: getHeaders(options),
+    headers: getHeaders(undefined, options, azureToken),
     next: {
       revalidate: revalidateTime,
       ...(options?.tags ? { tags: options.tags } : {}),
@@ -59,9 +65,11 @@ async function get<T>(url: string, options?: FetchOptions): Promise<ApiResponse<
 // =============================================================================================================================================
 
 async function post<T>(url: string, body: unknown, options?: FetchOptions): Promise<ApiResponse<T>> {
+  const azureToken = await getAzureToken();
+
   const res = await fetch(`${apiUrl}${url}`, {
     method: "POST",
-    headers: getHeaders(body, options),
+    headers: getHeaders(body, options, azureToken),
     body: body instanceof FormData ? body : JSON.stringify(body),
     next: options?.tags ? { tags: options.tags } : undefined,
     credentials: "include",
@@ -73,9 +81,11 @@ async function post<T>(url: string, body: unknown, options?: FetchOptions): Prom
 // =============================================================================================================================================
 
 async function put<T>(url: string, body: unknown, options?: FetchOptions): Promise<ApiResponse<T>> {
+  const azureToken = await getAzureToken();
+
   const res = await fetch(`${apiUrl}${url}`, {
     method: "PUT",
-    headers: getHeaders(body, options),
+    headers: getHeaders(body, options, azureToken),
     body: body instanceof FormData ? body : JSON.stringify(body),
     next: options?.tags ? { tags: options.tags } : undefined,
     credentials: "include",
@@ -87,9 +97,11 @@ async function put<T>(url: string, body: unknown, options?: FetchOptions): Promi
 // =============================================================================================================================================
 
 async function patch<T>(url: string, body: unknown, options?: FetchOptions): Promise<ApiResponse<T>> {
+  const azureToken = await getAzureToken();
+
   const res = await fetch(`${apiUrl}${url}`, {
     method: "PATCH",
-    headers: getHeaders(body, options),
+    headers: getHeaders(body, options, azureToken),
     body: body instanceof FormData ? body : JSON.stringify(body),
     next: options?.tags ? { tags: options.tags } : undefined,
     credentials: "include",
@@ -101,9 +113,11 @@ async function patch<T>(url: string, body: unknown, options?: FetchOptions): Pro
 // =============================================================================================================================================
 
 async function del<T>(url: string, options?: FetchOptions): Promise<ApiResponse<T>> {
+  const azureToken = await getAzureToken();
+
   const res = await fetch(`${apiUrl}${url}`, {
     method: "DELETE",
-    headers: getHeaders(options),
+    headers: getHeaders(undefined, options, azureToken),
     next: options?.tags ? { tags: options.tags } : undefined,
     credentials: "include",
   });
@@ -139,3 +153,5 @@ async function handleResponse<T>(res: Response): Promise<ApiResponse<T>> {
 // =============================================================================================================================================
 
 export { get, post, put, patch, del };
+
+// =============================================================================================================================================

@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import type { Post } from "@prisma/client";
-import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 import { schemaCreatePostFormData } from "@/constants/schema";
 import { uploadMediaToAzure } from "@/lib/uploadMediaToAzure";
 import { generateSASURL } from "@/lib/generateSasUrl";
 import { revalidateTag } from "next/cache";
+import verifyRequestHeaders from "@/utils/verifyRequestHeaders";
 
 // ==================================================================================================================================
 

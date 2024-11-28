@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import type { User } from "@prisma/client";
-import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 import { ObjectId } from "mongodb";
 import { schemaUpdateProfileForm } from "@/constants/schema";
 import { revalidateTag } from "next/cache";
 import { generateSASURL } from "@/lib/generateSasUrl";
+import verifyRequestHeaders from "@/utils/verifyRequestHeaders";
 
 // =================================================================================================================
 

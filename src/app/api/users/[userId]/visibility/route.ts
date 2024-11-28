@@ -1,6 +1,6 @@
 import { schemaSettingsCardVisibilityForm } from "@/constants/schema";
 import { prisma } from "@/lib/prisma";
-import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
+import verifyRequestHeaders from "@/utils/verifyRequestHeaders";
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 

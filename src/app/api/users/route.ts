@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import type { User } from "@prisma/client";
-import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 import { generateSASURL } from "@/lib/generateSasUrl";
+import verifyRequestHeaders from "@/utils/verifyRequestHeaders";
 
 // =================================================================================================================
 

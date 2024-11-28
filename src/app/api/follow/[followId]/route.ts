@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { verifyRequestHeaders } from "@/utils/verifyRequestHeaders";
 import { revalidateTag } from "next/cache";
+import verifyRequestHeaders from "@/utils/verifyRequestHeaders";
 
 // ==================================================================================================
 
