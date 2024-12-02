@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import verifyRequestHeaders from "@/utils/verifyRequestHeaders";
+import { revalidateTag } from "next/cache";
 
 // ==========================================================================
 
@@ -44,6 +45,8 @@ export async function PATCH(request: NextRequest) {
       notifyOnNewPost: !follow.notifyOnNewPost,
     },
   });
+
+  revalidateTag("follow");
 
   return NextResponse.json({
     success: true,
