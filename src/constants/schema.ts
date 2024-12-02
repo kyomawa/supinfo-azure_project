@@ -72,3 +72,12 @@ export const schemaNewCommentFormJson = z.object({
 });
 
 // =============================================================================================================================================
+
+export const schemaSearchForm = z.object({
+  q: z
+    .string()
+    .min(1, "Veuilez rechercher quelque chose.")
+    .max(5, "Veuillez limiter votre recherche à 5 caractères maximum."),
+});
+
+// =============================================================================================================================================

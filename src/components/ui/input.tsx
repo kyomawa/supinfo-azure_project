@@ -11,6 +11,8 @@ const inputVariants = cva(
         default:
           "border border-neutral-200 bg-white dark:border-white/5 dark:bg-white/10 ring-offset-white placeholder:text-neutral-500 dark:placeholder:text-white/55 focus-visible:ring-1 focus-visible:ring-slate-950 focus-visible:ring-offset-1 ",
         file: "border border-neutral-200 bg-white ring-offset-white dark:border-white/5 dark:bg-white/10 dark:placeholder:text-white/55 placeholder:text-neutral-500 focus-visible:ring-1 focus-visible:ring-slate-950 focus-visible:ring-offset-1   dark:text-neutral-10 dark:focus-visible:ring-slate-300 dark:ring-offset-primary-100/75",
+        searchbar:
+          "!pl-[3.25rem] h-auto !text-base !pr-4 !py-3 bg-black/5 dark:bg-white/[0.075] rounded-lg placeholder:text-neutral-500 dark:placeholder:text-white/45",
       },
     },
     defaultVariants: {
