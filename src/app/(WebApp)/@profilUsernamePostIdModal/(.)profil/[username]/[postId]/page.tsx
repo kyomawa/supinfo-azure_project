@@ -23,6 +23,7 @@ export default async function Page({ params }: { params: { username: string; pos
 
   return (
     <ProfileUserModal
+      isInAModal
       post={post.data || ({} as PostWithCreatorByPostIdEndpointProps)}
       comments={comments.data || []}
       likes={likes.data || []}

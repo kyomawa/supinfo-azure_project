@@ -55,7 +55,7 @@ export default function SettingsCardVisibilityForm({ id, visibility }: SettingsC
           options={[
             { label: "Public", value: "PUBLIC" },
             { label: "Privé", value: "PRIVATE" },
-            { label: "Amis seulement", value: "FRIENDS" },
+            // { label: "Amis seulement", value: "FRIENDS" },
           ]}
         />
       </form>

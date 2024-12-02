@@ -120,9 +120,10 @@ model Comment {
 }
 
 model Follow {
-  id        String       @id @default(auto()) @map("_id") @db.ObjectId
-  status    FollowStatus @default(CONFIRMED)
-  createdAt DateTime     @default(now())
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  status          FollowStatus @default(CONFIRMED)
+  notifyOnNewPost Boolean      @default(false)
+  createdAt       DateTime     @default(now())
 
   follower    User   @relation("UserFollows", fields: [followerId], references: [id], onDelete: Cascade)
   followerId  String @db.ObjectId

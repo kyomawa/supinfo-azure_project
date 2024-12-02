@@ -58,12 +58,13 @@ import { Ellipsis } from "lucide-react";
 // ==================================================================================================================================
 
 type ProfileUserModalProps = {
+  isInAModal?: boolean;
   post: PostWithCreatorByPostIdEndpointProps;
   comments: CommentsWithUsersByPostIdEndpointProps[];
   likes: LikesWithUsersByPostIdEndpointProps[];
 };
 
-export default function ProfileUserModal({ post, comments, likes }: ProfileUserModalProps) {
+export default function ProfileUserModal({ post, comments, likes, isInAModal }: ProfileUserModalProps) {
   const router = useRouter();
 
   useEffect(() => {
@@ -73,13 +74,21 @@ export default function ProfileUserModal({ post, comments, likes }: ProfileUserM
     };
   }, []);
 
+  if (isInAModal) {
+    return (
+      <AnimatePresence>
+        <div className="fixed top-1/2 left-1/2 xl:h-[95dvh] z-50 size-full xl:w-[60rem] 2xl:w-[75rem] 2k:w-[90rem] -translate-x-1/2 -translate-y-1/2">
+          <PostCard post={post} comments={comments} likes={likes} isInAModal />
+        </div>
+        <Overlay router={router} />
+      </AnimatePresence>
+    );
+  }
+
   return (
-    <AnimatePresence>
-      <div className="fixed top-1/2 left-1/2 xl:h-[95dvh] z-50 size-full xl:w-[60rem] 2xl:w-[75rem] 2k:w-[90rem] -translate-x-1/2 -translate-y-1/2">
-        <PostCard post={post} comments={comments} likes={likes} />
-      </div>
-      <Overlay router={router} />
-    </AnimatePresence>
+    <div className="h-[95dvh] size-full w-[65vw] 2k:w-[70vw] mx-auto">
+      <PostCard post={post} comments={comments} likes={likes} isInAModal={false} />
+    </div>
   );
 }
 
@@ -89,9 +98,10 @@ type PostCardProps = {
   post: PostWithCreatorByPostIdEndpointProps;
   comments: CommentsWithUsersByPostIdEndpointProps[];
   likes: LikesWithUsersByPostIdEndpointProps[];
+  isInAModal?: boolean;
 };
 
-function PostCard({ post, likes: initialLikes, comments: initialComments }: PostCardProps) {
+function PostCard({ post, likes: initialLikes, comments: initialComments, isInAModal }: PostCardProps) {
   const [comments, setComments] = useState(initialComments);
   const [likes, setLikes] = useState(initialLikes);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -99,6 +109,12 @@ function PostCard({ post, likes: initialLikes, comments: initialComments }: Post
   const [isVideoMuted, setIsVideoMuted] = useState(false);
   const { mediaUrl, creator, tags, description, createdAt } = post;
   const mediaIsAnImage = mediaUrl.includes("/images/");
+
+  useEffect(() => {
+    if (!isInAModal) {
+      setIsVideoMuted(true);
+    }
+  }, [isInAModal]);
 
   return (
     <motion.div

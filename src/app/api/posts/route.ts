@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
   });
 
   const followers = await prisma.follow.findMany({
-    where: { followingId: creatorId },
+    where: { followingId: creatorId, notifyOnNewPost: true },
     select: { followerId: true },
   });
 

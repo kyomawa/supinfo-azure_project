@@ -43,9 +43,8 @@ export default async function Page({ params }: { params: { username: string } })
     });
   }
 
-  const mustHideFollows = !isFollowing && (user?.visibility === "PRIVATE" || user?.visibility === "FRIENDS");
-
-  console.log(mustHideFollows);
+  const mustHideFollows =
+    !isFollowing && (user?.visibility === "PRIVATE" || user?.visibility === "FRIENDS") && user?.id !== userConnectedId;
 
   return (
     <div className="md:p-6 pageHeight 2xl:pr-36">

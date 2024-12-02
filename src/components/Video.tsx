@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "motion/react";
-import { Volume2, VolumeOff } from "lucide-react";
+import { Play, Volume2, VolumeOff } from "lucide-react";
 import TooltipComponent from "./TooltipComponent";
 
 // ==============================================================================================================================
@@ -36,6 +36,11 @@ export default function Video({ src, containerClassName, className, isMuted, set
     }
   };
 
+  const handleClickOnButton = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    handleClick();
+  };
+
   useEffect(() => {
     if (isVideoInView) {
       if (!userStoppedPlaying) {
@@ -63,6 +68,16 @@ export default function Video({ src, containerClassName, className, isMuted, set
         <source src={src} />
         Your browser does not support the video tag.
       </motion.video>
+      {!isPlaying && (
+        <button
+          onClick={handleClickOnButton}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/15 hover:bg-white/20 backdrop-blur-3xl transition-colors duration-200"
+        >
+          <div className="p-4 bg-black/10 hover:bg-black/5 rounded-full backdrop-blur-3xl transition-colors duration-200">
+            <Play className="size-6" />
+          </div>
+        </button>
+      )}
       <MuteButton isMuted={isMuted} setIsMuted={setIsMuted} />
     </div>
   );
@@ -82,9 +97,17 @@ function MuteButton({ isMuted, setIsMuted }: MuteButtonProps) {
     <TooltipComponent label={label} side="top" delayDuration={250}>
       <button
         onClick={() => setIsMuted(!isMuted)}
-        className="absolute bottom-4 right-4 p-2 rounded-full bg-white/15 hover:bg-white/20 backdrop-blur-3xl transition-colors duration-200"
+        className="absolute bottom-4 right-4 rounded-full bg-white/15 hover:bg-white/20 backdrop-blur-3xl transition-colors duration-200"
       >
-        {isMuted ? <VolumeOff className="size-4 text-white" /> : <Volume2 className="size-4 text-white" />}
+        {isMuted ? (
+          <div className="bg-black/15 hover:bg-black/10 p-2 rounded-full backdrop-blur-3xl transition-colors duration-200">
+            <VolumeOff className="size-4 text-white" />
+          </div>
+        ) : (
+          <div className=" bg-black/15 hover:bg-black/10 p-2 rounded-full backdrop-blur-3xl transition-colors duration-200">
+            <Volume2 className="size-4 text-white" />
+          </div>
+        )}
       </button>
     </TooltipComponent>
   );

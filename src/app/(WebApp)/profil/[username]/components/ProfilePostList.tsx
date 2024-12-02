@@ -12,17 +12,23 @@ import { User } from "@prisma/client";
 type ProfilePostListProps = {
   posts: PostsByUserIdEndpointProps[];
   user: User;
+  userConnectedOwnTheProfil: boolean;
   userConnectedIsSuscribed: boolean;
 };
 
-export default function ProfilePostList({ posts: initialPosts, user, userConnectedIsSuscribed }: ProfilePostListProps) {
+export default function ProfilePostList({
+  posts: initialPosts,
+  user,
+  userConnectedIsSuscribed,
+  userConnectedOwnTheProfil,
+}: ProfilePostListProps) {
   const [posts, setPosts] = useState<PostsByUserIdEndpointProps[]>(initialPosts);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialPosts.length === 9);
   const [skip, setSkip] = useState(initialPosts.length);
 
   const { username, id: userId, visibility } = user;
-  const profileIsHidden = visibility === "PRIVATE" && !userConnectedIsSuscribed;
+  const profileIsHidden = visibility === "PRIVATE" && !userConnectedIsSuscribed && !userConnectedOwnTheProfil;
 
   const loadMorePosts = async () => {
     if (isLoading || !hasMore) return;

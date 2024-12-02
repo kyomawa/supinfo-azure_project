@@ -31,7 +31,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
-import { del, post } from "@/utils/apiFn";
+import { del, patch, post } from "@/utils/apiFn";
+import { BellOff, BellRing } from "lucide-react";
+import TooltipComponent from "@/components/TooltipComponent";
 
 // ==================================================================================================================================
 
@@ -57,6 +59,7 @@ export default function Profile({
   const userConnectedIsSuscribed = followers.some(
     (follower) => follower.id === userConnectedId && follower.status !== "PENDING"
   );
+  const userConnectedFollowerId = followers.find((follower) => follower.id === userConnectedId)?.id;
   const userConnectedOwnTheProfil = userConnectedId === user.id;
 
   const initialFollowStatus = followers.find((follower) => follower.id === userConnectedId)?.status || null;
@@ -70,10 +73,17 @@ export default function Profile({
         userPostCount={userPostCount}
         mustHideFollows={mustHideFollows}
         initialFollowStatus={initialFollowStatus}
+        userConnectedIsSuscribed={userConnectedIsSuscribed}
         userConnectedOwnTheProfil={userConnectedOwnTheProfil}
+        userConnectedFollowerId={userConnectedFollowerId}
       />
       <span className="h-px w-full bg-neutral-150 dark:bg-white/10" />
-      <ProfilePostList posts={posts} user={user} userConnectedIsSuscribed={userConnectedIsSuscribed} />
+      <ProfilePostList
+        posts={posts}
+        user={user}
+        userConnectedIsSuscribed={userConnectedIsSuscribed}
+        userConnectedOwnTheProfil={userConnectedOwnTheProfil}
+      />
     </section>
   );
 }
@@ -88,6 +98,8 @@ type UserCardProps = {
   initialFollowStatus: FollowStatus | null;
   mustHideFollows: boolean;
   userConnectedOwnTheProfil: boolean;
+  userConnectedIsSuscribed: boolean;
+  userConnectedFollowerId: string | undefined;
 };
 
 function UserCard({
@@ -98,6 +110,8 @@ function UserCard({
   userPostCount,
   mustHideFollows,
   userConnectedOwnTheProfil,
+  userConnectedIsSuscribed,
+  userConnectedFollowerId,
 }: UserCardProps) {
   const [user, setUser] = useState<User>(initialUser);
   const { id, username, image, bio } = user;
@@ -118,7 +132,12 @@ function UserCard({
           {userConnectedOwnTheProfil ? (
             <ProfileEditButton user={user} setUser={setUser} />
           ) : (
-            <UserCardFollowButton initialFollowStatus={initialFollowStatus} profileUserId={id} />
+            <div className="flex gap-x-1 md:mr-2">
+              <UserCardFollowButton initialFollowStatus={initialFollowStatus} profileUserId={id} />
+              {userConnectedIsSuscribed && (
+                <NotificationButton userId={id} userConnectedFollowerId={userConnectedFollowerId} />
+              )}
+            </div>
           )}
         </div>
         {/* Number of posts + followers + followings */}
@@ -147,6 +166,52 @@ function UserCard({
         ) : null}
       </div>
     </div>
+  );
+}
+
+// ==================================================================================================================================
+
+type NotificationButtonProps = {
+  userId: string;
+  userConnectedFollowerId: string | undefined;
+};
+
+function NotificationButton({ userConnectedFollowerId, userId }: NotificationButtonProps) {
+  const [isNotified, setIsNotified] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const toggleNotification = async () => {
+    if (!userConnectedFollowerId) return;
+
+    setIsLoading(true);
+    const toastId = toast.loading("Mise à jour des notifications...");
+
+    const response = await patch<Follow>(`follow/notify`, {
+      followerId: userConnectedFollowerId,
+      followingId: userId,
+    });
+
+    if (response.success) {
+      setIsNotified(response.data.notifyOnNewPost);
+      toast.success(response.message, { id: toastId });
+    } else {
+      toast.error(response.message, { id: toastId });
+    }
+
+    setIsLoading(false);
+  };
+
+  return (
+    <TooltipComponent side="bottom" label={isNotified ? "Désactiver les notifications" : "Activer les notifications"}>
+      <Button
+        className=""
+        variant={isNotified ? "secondary" : "default"}
+        onClick={toggleNotification}
+        isLoading={isLoading}
+      >
+        {isNotified ? <BellOff className="size-[1.125rem]" /> : <BellRing className="size-[1.125rem]" />}
+      </Button>
+    </TooltipComponent>
   );
 }
 
@@ -206,12 +271,7 @@ function UserCardFollowButton({ initialFollowStatus, profileUserId }: UserCardFo
   };
 
   return (
-    <Button
-      className="md:mr-2"
-      variant={followStatus ? "secondary" : "default"}
-      onClick={handleFollow}
-      isLoading={isLoading}
-    >
+    <Button variant={followStatus ? "secondary" : "default"} onClick={handleFollow} isLoading={isLoading}>
       {getButtonLabel()}
     </Button>
   );
