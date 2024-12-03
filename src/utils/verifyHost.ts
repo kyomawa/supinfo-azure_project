@@ -21,7 +21,7 @@ export function verifyHost(request: NextRequest): NextResponse | null {
     );
   }
 
-  const allowedHosts = ["api.supinfo-azure-project.fr", "supinfo-azure-project.fr"];
+  const allowedHosts = ["api.supinfo-azure-project.fr", "supinfo-azure-project.fr", "editor.swagger.io"];
 
   const isAllowed = allowedHosts.some((allowedHost) => {
     return host.toLowerCase() === allowedHost.toLowerCase();
